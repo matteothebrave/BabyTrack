@@ -1,22 +1,41 @@
 openapi: 3.1.0
 info:
-  # Do not change the title, if the title changes, the import paths will be broken
   title: Api
   version: 0.1.0
-  description: API specification
+  description: Twin Dad Command Center API
 servers:
   - url: /api
     description: Base API path
 tags:
   - name: health
     description: Health operations
+  - name: settings
+    description: App settings
+  - name: babies
+    description: Baby profiles
+  - name: feeding
+    description: Feeding logs
+  - name: diapers
+    description: Diaper logs
+  - name: sleep
+    description: Sleep logs
+  - name: milestones
+    description: Baby milestones
+  - name: checklists
+    description: Preparation checklists
+  - name: appointments
+    description: Doctor appointments
+  - name: journal
+    description: Dad's journal
+  - name: summary
+    description: Dashboard summaries
+
 paths:
   /healthz:
     get:
       operationId: healthCheck
       tags: [health]
       summary: Health check
-      description: Returns server health status
       responses:
         "200":
           description: Healthy
@@ -24,6 +43,555 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/HealthStatus"
+
+  /settings:
+    get:
+      operationId: getSettings
+      tags: [settings]
+      summary: Get app settings
+      responses:
+        "200":
+          description: Settings
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Settings"
+    put:
+      operationId: updateSettings
+      tags: [settings]
+      summary: Update app settings
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/SettingsInput"
+      responses:
+        "200":
+          description: Updated settings
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Settings"
+
+  /summary:
+    get:
+      operationId: getDashboardSummary
+      tags: [summary]
+      summary: Get dashboard summary
+      responses:
+        "200":
+          description: Summary
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/DashboardSummary"
+
+  /babies:
+    get:
+      operationId: getBabies
+      tags: [babies]
+      summary: List all babies
+      responses:
+        "200":
+          description: List of babies
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Baby"
+    post:
+      operationId: createBaby
+      tags: [babies]
+      summary: Add a baby profile
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/BabyInput"
+      responses:
+        "201":
+          description: Created baby
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Baby"
+
+  /babies/{id}:
+    get:
+      operationId: getBaby
+      tags: [babies]
+      summary: Get a baby by ID
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: Baby
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Baby"
+    put:
+      operationId: updateBaby
+      tags: [babies]
+      summary: Update a baby profile
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/BabyInput"
+      responses:
+        "200":
+          description: Updated baby
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Baby"
+
+  /babies/{id}/today:
+    get:
+      operationId: getBabyToday
+      tags: [babies]
+      summary: Get today's activity summary for a baby
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: Today's summary
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/BabyTodaySummary"
+
+  /feeding-logs:
+    get:
+      operationId: getFeedingLogs
+      tags: [feeding]
+      summary: List feeding logs
+      parameters:
+        - name: babyId
+          in: query
+          schema:
+            type: integer
+        - name: limit
+          in: query
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: Feeding logs
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/FeedingLog"
+    post:
+      operationId: createFeedingLog
+      tags: [feeding]
+      summary: Log a feeding
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/FeedingLogInput"
+      responses:
+        "201":
+          description: Created feeding log
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/FeedingLog"
+
+  /feeding-logs/{id}:
+    delete:
+      operationId: deleteFeedingLog
+      tags: [feeding]
+      summary: Delete a feeding log
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        "204":
+          description: Deleted
+
+  /diaper-logs:
+    get:
+      operationId: getDiaperLogs
+      tags: [diapers]
+      summary: List diaper logs
+      parameters:
+        - name: babyId
+          in: query
+          schema:
+            type: integer
+        - name: limit
+          in: query
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: Diaper logs
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/DiaperLog"
+    post:
+      operationId: createDiaperLog
+      tags: [diapers]
+      summary: Log a diaper change
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/DiaperLogInput"
+      responses:
+        "201":
+          description: Created diaper log
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/DiaperLog"
+
+  /diaper-logs/{id}:
+    delete:
+      operationId: deleteDiaperLog
+      tags: [diapers]
+      summary: Delete a diaper log
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        "204":
+          description: Deleted
+
+  /sleep-logs:
+    get:
+      operationId: getSleepLogs
+      tags: [sleep]
+      summary: List sleep logs
+      parameters:
+        - name: babyId
+          in: query
+          schema:
+            type: integer
+        - name: limit
+          in: query
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: Sleep logs
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/SleepLog"
+    post:
+      operationId: createSleepLog
+      tags: [sleep]
+      summary: Log a sleep session
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/SleepLogInput"
+      responses:
+        "201":
+          description: Created sleep log
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/SleepLog"
+
+  /sleep-logs/{id}:
+    delete:
+      operationId: deleteSleepLog
+      tags: [sleep]
+      summary: Delete a sleep log
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        "204":
+          description: Deleted
+
+  /milestones:
+    get:
+      operationId: getMilestones
+      tags: [milestones]
+      summary: List milestones
+      parameters:
+        - name: babyId
+          in: query
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: Milestones
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Milestone"
+    post:
+      operationId: createMilestone
+      tags: [milestones]
+      summary: Record a milestone
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/MilestoneInput"
+      responses:
+        "201":
+          description: Created milestone
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Milestone"
+
+  /milestones/{id}:
+    delete:
+      operationId: deleteMilestone
+      tags: [milestones]
+      summary: Delete a milestone
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        "204":
+          description: Deleted
+
+  /checklist-items:
+    get:
+      operationId: getChecklistItems
+      tags: [checklists]
+      summary: List checklist items
+      parameters:
+        - name: category
+          in: query
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Checklist items
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/ChecklistItem"
+    post:
+      operationId: createChecklistItem
+      tags: [checklists]
+      summary: Add a checklist item
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ChecklistItemInput"
+      responses:
+        "201":
+          description: Created checklist item
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ChecklistItem"
+
+  /checklist-items/{id}:
+    put:
+      operationId: updateChecklistItem
+      tags: [checklists]
+      summary: Update a checklist item
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ChecklistItemUpdate"
+      responses:
+        "200":
+          description: Updated item
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ChecklistItem"
+    delete:
+      operationId: deleteChecklistItem
+      tags: [checklists]
+      summary: Delete a checklist item
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        "204":
+          description: Deleted
+
+  /appointments:
+    get:
+      operationId: getAppointments
+      tags: [appointments]
+      summary: List appointments
+      responses:
+        "200":
+          description: Appointments
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Appointment"
+    post:
+      operationId: createAppointment
+      tags: [appointments]
+      summary: Create an appointment
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/AppointmentInput"
+      responses:
+        "201":
+          description: Created appointment
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Appointment"
+
+  /appointments/{id}:
+    delete:
+      operationId: deleteAppointment
+      tags: [appointments]
+      summary: Delete an appointment
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        "204":
+          description: Deleted
+
+  /journal-entries:
+    get:
+      operationId: getJournalEntries
+      tags: [journal]
+      summary: List journal entries
+      responses:
+        "200":
+          description: Journal entries
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/JournalEntry"
+    post:
+      operationId: createJournalEntry
+      tags: [journal]
+      summary: Create a journal entry
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/JournalEntryInput"
+      responses:
+        "201":
+          description: Created journal entry
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/JournalEntry"
+
+  /journal-entries/{id}:
+    put:
+      operationId: updateJournalEntry
+      tags: [journal]
+      summary: Update a journal entry
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/JournalEntryInput"
+      responses:
+        "200":
+          description: Updated journal entry
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/JournalEntry"
+    delete:
+      operationId: deleteJournalEntry
+      tags: [journal]
+      summary: Delete a journal entry
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        "204":
+          description: Deleted
+
 components:
   schemas:
     HealthStatus:
@@ -34,3 +602,410 @@ components:
       required:
         - status
 
+    Settings:
+      type: object
+      properties:
+        id:
+          type: integer
+        parentName:
+          type: string
+        dueDate:
+          type: ["string", "null"]
+        momName:
+          type: string
+        createdAt:
+          type: string
+      required:
+        - id
+        - parentName
+        - momName
+
+    SettingsInput:
+      type: object
+      properties:
+        parentName:
+          type: string
+        momName:
+          type: string
+        dueDate:
+          type: ["string", "null"]
+
+    Baby:
+      type: object
+      properties:
+        id:
+          type: integer
+        name:
+          type: string
+        gender:
+          type: ["string", "null"]
+        birthDate:
+          type: ["string", "null"]
+        colorHex:
+          type: string
+        notes:
+          type: ["string", "null"]
+        createdAt:
+          type: string
+      required:
+        - id
+        - name
+        - colorHex
+        - createdAt
+
+    BabyInput:
+      type: object
+      properties:
+        name:
+          type: string
+        gender:
+          type: ["string", "null"]
+        birthDate:
+          type: ["string", "null"]
+        colorHex:
+          type: string
+        notes:
+          type: ["string", "null"]
+      required:
+        - name
+        - colorHex
+
+    BabyTodaySummary:
+      type: object
+      properties:
+        babyId:
+          type: integer
+        babyName:
+          type: string
+        feedingCount:
+          type: integer
+        diaperCount:
+          type: integer
+        sleepMinutes:
+          type: integer
+        lastFed:
+          type: ["string", "null"]
+        lastDiaper:
+          type: ["string", "null"]
+      required:
+        - babyId
+        - babyName
+        - feedingCount
+        - diaperCount
+        - sleepMinutes
+
+    DashboardSummary:
+      type: object
+      properties:
+        daysUntilDue:
+          type: ["integer", "null"]
+        dueDate:
+          type: ["string", "null"]
+        babiesCount:
+          type: integer
+        totalFeedingsToday:
+          type: integer
+        totalDiapersToday:
+          type: integer
+        checklistProgress:
+          type: object
+          properties:
+            total:
+              type: integer
+            completed:
+              type: integer
+          required:
+            - total
+            - completed
+        upcomingAppointments:
+          type: array
+          items:
+            $ref: "#/components/schemas/Appointment"
+      required:
+        - babiesCount
+        - totalFeedingsToday
+        - totalDiapersToday
+        - checklistProgress
+        - upcomingAppointments
+
+    FeedingLog:
+      type: object
+      properties:
+        id:
+          type: integer
+        babyId:
+          type: integer
+        feedType:
+          type: string
+        amount:
+          type: ["number", "null"]
+        durationMinutes:
+          type: ["integer", "null"]
+        notes:
+          type: ["string", "null"]
+        loggedAt:
+          type: string
+        createdAt:
+          type: string
+      required:
+        - id
+        - babyId
+        - feedType
+        - loggedAt
+        - createdAt
+
+    FeedingLogInput:
+      type: object
+      properties:
+        babyId:
+          type: integer
+        feedType:
+          type: string
+        amount:
+          type: ["number", "null"]
+        durationMinutes:
+          type: ["integer", "null"]
+        notes:
+          type: ["string", "null"]
+        loggedAt:
+          type: string
+      required:
+        - babyId
+        - feedType
+        - loggedAt
+
+    DiaperLog:
+      type: object
+      properties:
+        id:
+          type: integer
+        babyId:
+          type: integer
+        diaperType:
+          type: string
+        notes:
+          type: ["string", "null"]
+        loggedAt:
+          type: string
+        createdAt:
+          type: string
+      required:
+        - id
+        - babyId
+        - diaperType
+        - loggedAt
+        - createdAt
+
+    DiaperLogInput:
+      type: object
+      properties:
+        babyId:
+          type: integer
+        diaperType:
+          type: string
+        notes:
+          type: ["string", "null"]
+        loggedAt:
+          type: string
+      required:
+        - babyId
+        - diaperType
+        - loggedAt
+
+    SleepLog:
+      type: object
+      properties:
+        id:
+          type: integer
+        babyId:
+          type: integer
+        startTime:
+          type: string
+        endTime:
+          type: ["string", "null"]
+        notes:
+          type: ["string", "null"]
+        createdAt:
+          type: string
+      required:
+        - id
+        - babyId
+        - startTime
+        - createdAt
+
+    SleepLogInput:
+      type: object
+      properties:
+        babyId:
+          type: integer
+        startTime:
+          type: string
+        endTime:
+          type: ["string", "null"]
+        notes:
+          type: ["string", "null"]
+      required:
+        - babyId
+        - startTime
+
+    Milestone:
+      type: object
+      properties:
+        id:
+          type: integer
+        babyId:
+          type: integer
+        title:
+          type: string
+        description:
+          type: ["string", "null"]
+        category:
+          type: string
+        achievedAt:
+          type: string
+        createdAt:
+          type: string
+      required:
+        - id
+        - babyId
+        - title
+        - category
+        - achievedAt
+        - createdAt
+
+    MilestoneInput:
+      type: object
+      properties:
+        babyId:
+          type: integer
+        title:
+          type: string
+        description:
+          type: ["string", "null"]
+        category:
+          type: string
+        achievedAt:
+          type: string
+      required:
+        - babyId
+        - title
+        - category
+        - achievedAt
+
+    ChecklistItem:
+      type: object
+      properties:
+        id:
+          type: integer
+        category:
+          type: string
+        title:
+          type: string
+        completed:
+          type: boolean
+        notes:
+          type: ["string", "null"]
+        createdAt:
+          type: string
+      required:
+        - id
+        - category
+        - title
+        - completed
+        - createdAt
+
+    ChecklistItemInput:
+      type: object
+      properties:
+        category:
+          type: string
+        title:
+          type: string
+        notes:
+          type: ["string", "null"]
+      required:
+        - category
+        - title
+
+    ChecklistItemUpdate:
+      type: object
+      properties:
+        title:
+          type: string
+        completed:
+          type: boolean
+        notes:
+          type: ["string", "null"]
+
+    Appointment:
+      type: object
+      properties:
+        id:
+          type: integer
+        title:
+          type: string
+        appointmentDate:
+          type: string
+        location:
+          type: ["string", "null"]
+        notes:
+          type: ["string", "null"]
+        createdAt:
+          type: string
+      required:
+        - id
+        - title
+        - appointmentDate
+        - createdAt
+
+    AppointmentInput:
+      type: object
+      properties:
+        title:
+          type: string
+        appointmentDate:
+          type: string
+        location:
+          type: ["string", "null"]
+        notes:
+          type: ["string", "null"]
+      required:
+        - title
+        - appointmentDate
+
+    JournalEntry:
+      type: object
+      properties:
+        id:
+          type: integer
+        title:
+          type: string
+        content:
+          type: string
+        entryDate:
+          type: string
+        createdAt:
+          type: string
+        updatedAt:
+          type: string
+      required:
+        - id
+        - title
+        - content
+        - entryDate
+        - createdAt
+        - updatedAt
+
+    JournalEntryInput:
+      type: object
+      properties:
+        title:
+          type: string
+        content:
+          type: string
+        entryDate:
+          type: string
+      required:
+        - title
+        - content
+        - entryDate

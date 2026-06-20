@@ -1,0 +1,31 @@
+kind = "web"
+previewPath = "/"
+title = "Twin Dad Command Center"
+version = "1.0.0"
+id = "artifacts/twin-dad"
+router = "path"
+
+[[integratedSkills]]
+name = "react-vite"
+version = "1.0.0"
+
+[[services]]
+name = "web"
+paths = [ "/" ]
+localPort = 24957
+
+[services.development]
+run = "pnpm --filter @workspace/twin-dad run dev"
+
+[services.production]
+build = [ "pnpm", "--filter", "@workspace/twin-dad", "run", "build" ]
+publicDir = "artifacts/twin-dad/dist/public"
+serve = "static"
+
+[[services.production.rewrites]]
+from = "/*"
+to = "/index.html"
+
+[services.env]
+PORT = "24957"
+BASE_PATH = "/"
