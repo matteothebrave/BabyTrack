@@ -3,6 +3,7 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
 import { useLocation } from "wouter";
+import { useTranslation } from "react-i18next";
 import { 
   useGetSettings, 
   useUpdateSettings, 
@@ -22,23 +23,24 @@ import { Input } from "@/components/ui/input";
 import { useToast } from "@/hooks/use-toast";
 import { Loader2, Settings as SettingsIcon } from "lucide-react";
 
-const settingsSchema = z.object({
-  parentName: z.string().min(1, "Name is required"),
-  momName: z.string().min(1, "Partner's name is required"),
-  dueDate: z.string().min(1, "Due date is required"),
-});
-
-const babySchema = z.object({
-  name: z.string().min(1, "Baby name is required"),
-  colorHex: z.string().regex(/^#[0-9A-F]{6}$/i, "Must be a valid hex color"),
-  gender: z.string().optional(),
-  birthDate: z.string().optional(),
-});
-
 export default function Settings() {
+  const { t } = useTranslation();
   const [, setLocation] = useLocation();
   const { toast } = useToast();
   const queryClient = useQueryClient();
+
+  const settingsSchema = z.object({
+    parentName: z.string().min(1, t("settings.validation.nameRequired")),
+    momName: z.string().min(1, t("settings.validation.partnerRequired")),
+    dueDate: z.string().min(1, t("settings.validation.dueDateRequired")),
+  });
+
+  const babySchema = z.object({
+    name: z.string().min(1, t("settings.validation.babyNameRequired")),
+    colorHex: z.string().regex(/^#[0-9A-F]{6}$/i, t("settings.validation.invalidColor")),
+    gender: z.string().optional(),
+    birthDate: z.string().optional(),
+  });
 
   const { data: settings, isLoading: isLoadingSettings } = useGetSettings();
   const updateSettings = useUpdateSettings();
@@ -49,11 +51,7 @@ export default function Settings() {
 
   const form = useForm<z.infer<typeof settingsSchema>>({
     resolver: zodResolver(settingsSchema),
-    defaultValues: {
-      parentName: "",
-      momName: "",
-      dueDate: "",
-    },
+    defaultValues: { parentName: "", momName: "", dueDate: "" },
   });
 
   const baby1Form = useForm<z.infer<typeof babySchema>>({
@@ -109,7 +107,7 @@ export default function Settings() {
       {
         onSuccess: () => {
           queryClient.invalidateQueries({ queryKey: getGetSettingsQueryKey() });
-          toast({ title: "Settings saved" });
+          toast({ title: t("settings.settingsSaved") });
           if (!settings?.parentName) {
             setLocation("/");
           }
@@ -131,7 +129,7 @@ export default function Settings() {
         {
           onSuccess: () => {
             queryClient.invalidateQueries({ queryKey: getGetBabiesQueryKey() });
-            toast({ title: `Baby ${index + 1} updated` });
+            toast({ title: t("settings.babyUpdated", { n: index + 1 }) });
           },
         }
       );
@@ -141,7 +139,7 @@ export default function Settings() {
         {
           onSuccess: () => {
             queryClient.invalidateQueries({ queryKey: getGetBabiesQueryKey() });
-            toast({ title: `Baby ${index + 1} created` });
+            toast({ title: t("settings.babyCreated", { n: index + 1 }) });
           },
         }
       );
@@ -152,14 +150,14 @@ export default function Settings() {
     <div className="p-6 md:p-8 animate-in fade-in duration-500 max-w-2xl mx-auto space-y-8">
       <div className="flex items-center gap-3 mb-2">
         <SettingsIcon className="w-8 h-8 text-primary" />
-        <h1 className="text-4xl font-serif font-bold">Settings</h1>
+        <h1 className="text-4xl font-serif font-bold">{t("settings.title")}</h1>
       </div>
-      <p className="text-muted-foreground">Configure your command center.</p>
+      <p className="text-muted-foreground">{t("settings.subtitle")}</p>
 
       <Card className="border-border/50 shadow-sm">
         <CardHeader>
-          <CardTitle>Family Details</CardTitle>
-          <CardDescription>Basic information for your command center.</CardDescription>
+          <CardTitle>{t("settings.familyDetails")}</CardTitle>
+          <CardDescription>{t("settings.familyDetailsDesc")}</CardDescription>
         </CardHeader>
         <CardContent>
           <Form {...form}>
@@ -170,9 +168,9 @@ export default function Settings() {
                   name="parentName"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>Your Name (Dad)</FormLabel>
+                      <FormLabel>{t("settings.yourName")}</FormLabel>
                       <FormControl>
-                        <Input placeholder="Enter your name" {...field} />
+                        <Input placeholder={t("settings.yourName")} {...field} />
                       </FormControl>
                       <FormMessage />
                     </FormItem>
@@ -183,9 +181,9 @@ export default function Settings() {
                   name="momName"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>Partner's Name</FormLabel>
+                      <FormLabel>{t("settings.partnerName")}</FormLabel>
                       <FormControl>
-                        <Input placeholder="Enter partner's name" {...field} />
+                        <Input placeholder={t("settings.partnerName")} {...field} />
                       </FormControl>
                       <FormMessage />
                     </FormItem>
@@ -197,7 +195,7 @@ export default function Settings() {
                 name="dueDate"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Expected Due Date</FormLabel>
+                    <FormLabel>{t("settings.dueDate")}</FormLabel>
                     <FormControl>
                       <Input type="date" {...field} />
                     </FormControl>
@@ -207,7 +205,7 @@ export default function Settings() {
               />
               <Button type="submit" disabled={updateSettings.isPending}>
                 {updateSettings.isPending && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-                Save Family Details
+                {t("settings.saveFamilyDetails")}
               </Button>
             </form>
           </Form>
@@ -215,121 +213,68 @@ export default function Settings() {
       </Card>
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-        <Card className="border-border/50 shadow-sm">
-          <CardHeader>
-            <CardTitle>Baby 1</CardTitle>
-            <CardDescription>Profile for the first twin.</CardDescription>
-          </CardHeader>
-          <CardContent>
-            <Form {...baby1Form}>
-              <form onSubmit={baby1Form.handleSubmit((v) => onSaveBaby(v, 0))} className="space-y-4">
-                <FormField
-                  control={baby1Form.control}
-                  name="name"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Name</FormLabel>
-                      <FormControl>
-                        <Input placeholder="Baby A" {...field} />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-                <FormField
-                  control={baby1Form.control}
-                  name="colorHex"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Theme Color</FormLabel>
-                      <div className="flex gap-2">
+        {[
+          { label: t("settings.baby1"), desc: t("settings.baby1Desc"), formInstance: baby1Form, saveLabel: t("settings.saveBaby1"), idx: 0 },
+          { label: t("settings.baby2"), desc: t("settings.baby2Desc"), formInstance: baby2Form, saveLabel: t("settings.saveBaby2"), idx: 1 },
+        ].map(({ label, desc, formInstance, saveLabel, idx }) => (
+          <Card key={idx} className="border-border/50 shadow-sm">
+            <CardHeader>
+              <CardTitle>{label}</CardTitle>
+              <CardDescription>{desc}</CardDescription>
+            </CardHeader>
+            <CardContent>
+              <Form {...formInstance}>
+                <form onSubmit={formInstance.handleSubmit((v) => onSaveBaby(v, idx))} className="space-y-4">
+                  <FormField
+                    control={formInstance.control}
+                    name="name"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>{t("settings.name")}</FormLabel>
                         <FormControl>
-                          <Input type="color" className="w-12 h-10 p-1" {...field} />
+                          <Input placeholder={idx === 0 ? "Baby A" : "Baby B"} {...field} />
                         </FormControl>
-                        <Input type="text" className="flex-1" {...field} />
-                      </div>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-                <FormField
-                  control={baby1Form.control}
-                  name="birthDate"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Birth Date (Optional)</FormLabel>
-                      <FormControl>
-                        <Input type="date" {...field} />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-                <Button type="submit" variant="secondary" className="w-full" disabled={createBaby.isPending || updateBaby.isPending}>
-                  Save Baby 1
-                </Button>
-              </form>
-            </Form>
-          </CardContent>
-        </Card>
-
-        <Card className="border-border/50 shadow-sm">
-          <CardHeader>
-            <CardTitle>Baby 2</CardTitle>
-            <CardDescription>Profile for the second twin.</CardDescription>
-          </CardHeader>
-          <CardContent>
-            <Form {...baby2Form}>
-              <form onSubmit={baby2Form.handleSubmit((v) => onSaveBaby(v, 1))} className="space-y-4">
-                <FormField
-                  control={baby2Form.control}
-                  name="name"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Name</FormLabel>
-                      <FormControl>
-                        <Input placeholder="Baby B" {...field} />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-                <FormField
-                  control={baby2Form.control}
-                  name="colorHex"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Theme Color</FormLabel>
-                      <div className="flex gap-2">
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                  <FormField
+                    control={formInstance.control}
+                    name="colorHex"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>{t("settings.themeColor")}</FormLabel>
+                        <div className="flex gap-2">
+                          <FormControl>
+                            <Input type="color" className="w-12 h-10 p-1" {...field} />
+                          </FormControl>
+                          <Input type="text" className="flex-1" {...field} />
+                        </div>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                  <FormField
+                    control={formInstance.control}
+                    name="birthDate"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>{t("settings.birthDate")}</FormLabel>
                         <FormControl>
-                          <Input type="color" className="w-12 h-10 p-1" {...field} />
+                          <Input type="date" {...field} />
                         </FormControl>
-                        <Input type="text" className="flex-1" {...field} />
-                      </div>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-                <FormField
-                  control={baby2Form.control}
-                  name="birthDate"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Birth Date (Optional)</FormLabel>
-                      <FormControl>
-                        <Input type="date" {...field} />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-                <Button type="submit" variant="secondary" className="w-full" disabled={createBaby.isPending || updateBaby.isPending}>
-                  Save Baby 2
-                </Button>
-              </form>
-            </Form>
-          </CardContent>
-        </Card>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                  <Button type="submit" variant="secondary" className="w-full" disabled={createBaby.isPending || updateBaby.isPending}>
+                    {saveLabel}
+                  </Button>
+                </form>
+              </Form>
+            </CardContent>
+          </Card>
+        ))}
       </div>
     </div>
   );

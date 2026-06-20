@@ -1,8 +1,9 @@
-import React, { useState } from "react";
+import React from "react";
 import { format } from "date-fns";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
+import { useTranslation } from "react-i18next";
 import { 
   useGetJournalEntries, 
   useCreateJournalEntry, 
@@ -10,7 +11,7 @@ import {
   getGetJournalEntriesQueryKey 
 } from "@workspace/api-client-react";
 import { useQueryClient } from "@tanstack/react-query";
-import { Card, CardContent, CardHeader, CardTitle, CardFooter } from "@/components/ui/card";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { Input } from "@/components/ui/input";
@@ -18,12 +19,14 @@ import { Form, FormControl, FormField, FormItem, FormMessage } from "@/component
 import { useToast } from "@/hooks/use-toast";
 import { Loader2, BookOpen, Clock, Trash2 } from "lucide-react";
 
-const entrySchema = z.object({
-  title: z.string().min(1, "Title is required"),
-  content: z.string().min(1, "Content is required"),
-});
-
 export default function Journal() {
+  const { t } = useTranslation();
+
+  const entrySchema = z.object({
+    title: z.string().min(1, t("journal.validation.titleRequired")),
+    content: z.string().min(1, t("journal.validation.contentRequired")),
+  });
+
   const { data: entries, isLoading } = useGetJournalEntries();
   const createEntry = useCreateJournalEntry();
   const deleteEntry = useDeleteJournalEntry();
@@ -45,25 +48,22 @@ export default function Journal() {
 
   function onSubmit(values: z.infer<typeof entrySchema>) {
     createEntry.mutate({
-      data: {
-        ...values,
-        entryDate: new Date().toISOString(),
-      }
+      data: { ...values, entryDate: new Date().toISOString() }
     }, {
       onSuccess: () => {
         form.reset();
         queryClient.invalidateQueries({ queryKey: getGetJournalEntriesQueryKey() });
-        toast({ title: "Journal entry saved" });
+        toast({ title: t("journal.entrySaved") });
       }
     });
   }
 
   function handleDelete(id: number) {
-    if (confirm("Delete this journal entry?")) {
+    if (confirm(t("journal.deleteConfirm"))) {
       deleteEntry.mutate({ id }, {
         onSuccess: () => {
           queryClient.invalidateQueries({ queryKey: getGetJournalEntriesQueryKey() });
-          toast({ title: "Entry deleted" });
+          toast({ title: t("journal.entryDeleted") });
         }
       });
     }
@@ -73,11 +73,9 @@ export default function Journal() {
     <div className="p-6 md:p-8 animate-in fade-in duration-500 max-w-3xl mx-auto space-y-8">
       <div className="flex items-center gap-3 mb-2">
         <BookOpen className="w-8 h-8 text-primary" />
-        <h1 className="text-4xl font-serif font-bold">Dad's Journal</h1>
+        <h1 className="text-4xl font-serif font-bold">{t("journal.title")}</h1>
       </div>
-      <p className="text-muted-foreground text-lg">
-        Capture the thoughts, fears, and joys of this journey.
-      </p>
+      <p className="text-muted-foreground text-lg">{t("journal.subtitle")}</p>
 
       <Card className="border-border/50 shadow-sm bg-[#faf9f5]">
         <CardContent className="pt-6">
@@ -90,7 +88,7 @@ export default function Journal() {
                   <FormItem>
                     <FormControl>
                       <Input 
-                        placeholder="Entry Title" 
+                        placeholder={t("journal.entryTitlePlaceholder")}
                         className="text-lg font-serif border-none bg-transparent px-0 focus-visible:ring-0 focus-visible:ring-offset-0 placeholder:text-muted-foreground/50" 
                         {...field} 
                       />
@@ -107,7 +105,7 @@ export default function Journal() {
                   <FormItem>
                     <FormControl>
                       <Textarea 
-                        placeholder="Write what's on your mind..." 
+                        placeholder={t("journal.contentPlaceholder")}
                         className="min-h-[150px] resize-none border-none bg-transparent px-0 focus-visible:ring-0 focus-visible:ring-offset-0 text-base leading-relaxed placeholder:text-muted-foreground/50"
                         {...field} 
                       />
@@ -119,7 +117,7 @@ export default function Journal() {
               <div className="flex justify-end">
                 <Button type="submit" disabled={createEntry.isPending} className="rounded-full px-6">
                   {createEntry.isPending && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-                  Save Entry
+                  {t("journal.saveEntry")}
                 </Button>
               </div>
             </form>
@@ -133,7 +131,6 @@ export default function Journal() {
             <div className="flex items-center justify-center w-10 h-10 rounded-full border-4 border-background bg-primary text-primary-foreground shadow shrink-0 md:order-1 md:group-odd:-translate-x-1/2 md:group-even:translate-x-1/2 relative z-10">
               <Clock className="w-4 h-4" />
             </div>
-            
             <Card className="w-[calc(100%-3rem)] md:w-[calc(50%-2.5rem)] border-border/50 shadow-sm hover:shadow-md transition-shadow">
               <CardHeader className="pb-3 flex flex-row items-start justify-between">
                 <div>
@@ -160,7 +157,7 @@ export default function Journal() {
 
         {entries?.length === 0 && (
           <div className="text-center py-12 text-muted-foreground relative z-10">
-            <p>No journal entries yet.</p>
+            <p>{t("journal.noEntries")}</p>
           </div>
         )}
       </div>

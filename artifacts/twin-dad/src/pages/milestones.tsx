@@ -3,6 +3,7 @@ import { format } from "date-fns";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
+import { useTranslation } from "react-i18next";
 import { 
   useGetBabies, 
   useGetMilestones,
@@ -11,7 +12,7 @@ import {
   getGetMilestonesQueryKey
 } from "@workspace/api-client-react";
 import { useQueryClient } from "@tanstack/react-query";
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
@@ -21,27 +22,29 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useToast } from "@/hooks/use-toast";
 import { Loader2, Trophy, Plus, Trash2, Calendar, Star } from "lucide-react";
 
-const milestoneSchema = z.object({
-  title: z.string().min(1, "Title is required"),
-  description: z.string().optional(),
-  category: z.string().min(1, "Category is required"),
-  achievedAt: z.string().min(1, "Date is required"),
-});
-
-const CATEGORIES = [
-  { value: "physical", label: "Physical (Crawling, Walking)", color: "bg-blue-100 text-blue-800 dark:bg-blue-900/30 dark:text-blue-300" },
-  { value: "social", label: "Social (Smiling, Laughing)", color: "bg-pink-100 text-pink-800 dark:bg-pink-900/30 dark:text-pink-300" },
-  { value: "cognitive", label: "Cognitive (Tracking, Finding)", color: "bg-purple-100 text-purple-800 dark:bg-purple-900/30 dark:text-purple-300" },
-  { value: "language", label: "Language (Babbling, Words)", color: "bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-300" },
-  { value: "feeding", label: "Feeding (Solids, Cup)", color: "bg-orange-100 text-orange-800 dark:bg-orange-900/30 dark:text-orange-300" },
-];
+const CATEGORY_KEYS = ["physical", "social", "cognitive", "language", "feeding"] as const;
+const CATEGORY_COLORS: Record<string, string> = {
+  physical: "bg-blue-100 text-blue-800 dark:bg-blue-900/30 dark:text-blue-300",
+  social: "bg-pink-100 text-pink-800 dark:bg-pink-900/30 dark:text-pink-300",
+  cognitive: "bg-purple-100 text-purple-800 dark:bg-purple-900/30 dark:text-purple-300",
+  language: "bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-300",
+  feeding: "bg-orange-100 text-orange-800 dark:bg-orange-900/30 dark:text-orange-300",
+};
 
 export default function Milestones() {
+  const { t } = useTranslation();
+
+  const milestoneSchema = z.object({
+    title: z.string().min(1, t("milestones.validation.titleRequired")),
+    description: z.string().optional(),
+    category: z.string().min(1, t("milestones.validation.categoryRequired")),
+    achievedAt: z.string().min(1, t("milestones.validation.dateRequired")),
+  });
+
   const { data: babies, isLoading: isLoadingBabies } = useGetBabies();
   const [activeBabyId, setActiveBabyId] = useState<number | null>(null);
   const [isAdding, setIsAdding] = useState(false);
 
-  // Set initial active baby when loaded
   React.useEffect(() => {
     if (babies && babies.length > 0 && activeBabyId === null) {
       setActiveBabyId(babies[0].id);
@@ -80,8 +83,8 @@ export default function Milestones() {
     return (
       <div className="p-8 text-center">
         <Trophy className="w-12 h-12 mx-auto text-muted-foreground opacity-50 mb-4" />
-        <h2 className="text-2xl font-serif font-bold mb-2">No Babies Yet</h2>
-        <p className="text-muted-foreground">Add your babies in settings to start tracking milestones.</p>
+        <h2 className="text-2xl font-serif font-bold mb-2">{t("milestones.noBabiesTitle")}</h2>
+        <p className="text-muted-foreground">{t("milestones.noBabiesDesc")}</p>
       </div>
     );
   }
@@ -107,19 +110,18 @@ export default function Milestones() {
         });
         setIsAdding(false);
         queryClient.invalidateQueries({ queryKey: getGetMilestonesQueryKey({ babyId: activeBabyId }) });
-        toast({ title: "Milestone celebrated!" });
+        toast({ title: t("milestones.milestoneCelebrated") });
       }
     });
   }
 
   function handleDelete(id: number) {
     if (!activeBabyId) return;
-    
-    if (confirm("Remove this milestone?")) {
+    if (confirm(t("milestones.removeConfirm"))) {
       deleteMilestone.mutate({ id }, {
         onSuccess: () => {
           queryClient.invalidateQueries({ queryKey: getGetMilestonesQueryKey({ babyId: activeBabyId }) });
-          toast({ title: "Milestone removed" });
+          toast({ title: t("milestones.milestoneRemoved") });
         }
       });
     }
@@ -132,10 +134,10 @@ export default function Milestones() {
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-3">
           <Trophy className="w-8 h-8 text-primary" />
-          <h1 className="text-4xl font-serif font-bold">Milestones</h1>
+          <h1 className="text-4xl font-serif font-bold">{t("milestones.title")}</h1>
         </div>
         <Button onClick={() => setIsAdding(!isAdding)} variant={isAdding ? "outline" : "default"}>
-          {isAdding ? "Cancel" : <><Plus className="w-4 h-4 mr-2" /> Log First</>}
+          {isAdding ? t("milestones.cancel") : <><Plus className="w-4 h-4 mr-2" />{t("milestones.logFirst")}</>}
         </Button>
       </div>
 
@@ -159,7 +161,7 @@ export default function Milestones() {
         {isAdding && (
           <Card className="mb-8 border-primary/20 bg-primary/5 shadow-sm">
             <CardHeader>
-              <CardTitle>Log a new first for {activeBaby?.name}</CardTitle>
+              <CardTitle>{t("milestones.logNewFirst", { name: activeBaby?.name })}</CardTitle>
             </CardHeader>
             <CardContent>
               <Form {...form}>
@@ -170,9 +172,9 @@ export default function Milestones() {
                       name="title"
                       render={({ field }) => (
                         <FormItem>
-                          <FormLabel>What happened?</FormLabel>
+                          <FormLabel>{t("milestones.whatHappened")}</FormLabel>
                           <FormControl>
-                            <Input placeholder="First smile, rolled over..." {...field} />
+                            <Input placeholder={t("milestones.whatHappenedPlaceholder")} {...field} />
                           </FormControl>
                           <FormMessage />
                         </FormItem>
@@ -183,16 +185,18 @@ export default function Milestones() {
                       name="category"
                       render={({ field }) => (
                         <FormItem>
-                          <FormLabel>Category</FormLabel>
+                          <FormLabel>{t("milestones.category")}</FormLabel>
                           <Select onValueChange={field.onChange} defaultValue={field.value}>
                             <FormControl>
                               <SelectTrigger>
-                                <SelectValue placeholder="Select category" />
+                                <SelectValue placeholder={t("milestones.selectCategory")} />
                               </SelectTrigger>
                             </FormControl>
                             <SelectContent>
-                              {CATEGORIES.map(cat => (
-                                <SelectItem key={cat.value} value={cat.value}>{cat.label}</SelectItem>
+                              {CATEGORY_KEYS.map(key => (
+                                <SelectItem key={key} value={key}>
+                                  {t(`milestones.categories.${key}`)}
+                                </SelectItem>
                               ))}
                             </SelectContent>
                           </Select>
@@ -207,7 +211,7 @@ export default function Milestones() {
                     name="achievedAt"
                     render={({ field }) => (
                       <FormItem>
-                        <FormLabel>Date</FormLabel>
+                        <FormLabel>{t("milestones.date")}</FormLabel>
                         <FormControl>
                           <Input type="date" {...field} />
                         </FormControl>
@@ -221,9 +225,9 @@ export default function Milestones() {
                     name="description"
                     render={({ field }) => (
                       <FormItem>
-                        <FormLabel>The Story (Optional)</FormLabel>
+                        <FormLabel>{t("milestones.theStory")}</FormLabel>
                         <FormControl>
-                          <Textarea placeholder="How did it happen? Who was there?" className="resize-none" {...field} />
+                          <Textarea placeholder={t("milestones.storyPlaceholder")} className="resize-none" {...field} />
                         </FormControl>
                         <FormMessage />
                       </FormItem>
@@ -233,7 +237,7 @@ export default function Milestones() {
                   <div className="flex justify-end pt-2">
                     <Button type="submit" disabled={createMilestone.isPending}>
                       {createMilestone.isPending && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-                      Save Milestone
+                      {t("milestones.saveMilestone")}
                     </Button>
                   </div>
                 </form>
@@ -251,16 +255,18 @@ export default function Milestones() {
             ) : milestones && milestones.length > 0 ? (
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 {milestones.map(milestone => {
-                  const catInfo = CATEGORIES.find(c => c.value === milestone.category);
-                  
+                  const color = CATEGORY_COLORS[milestone.category] || "bg-gray-100 text-gray-800";
+                  const labelKey = `milestones.categories.${milestone.category}` as const;
+                  const catLabel = t(labelKey).split(" ")[0];
+
                   return (
                     <Card key={milestone.id} className="overflow-hidden border-border/50 hover:shadow-md transition-shadow group">
                       <div className="h-1.5 w-full" style={{ backgroundColor: baby.colorHex }} />
                       <CardHeader className="pb-3 relative">
                         <div className="flex justify-between items-start">
                           <div>
-                            <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium mb-2 ${catInfo?.color || 'bg-gray-100 text-gray-800'}`}>
-                              {catInfo?.label.split(' ')[0] || milestone.category}
+                            <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium mb-2 ${color}`}>
+                              {catLabel}
                             </span>
                             <CardTitle className="text-xl font-serif">{milestone.title}</CardTitle>
                           </div>
@@ -290,16 +296,16 @@ export default function Milestones() {
             ) : (
               <div className="text-center py-16 bg-muted/30 rounded-xl border border-dashed border-border">
                 <Star className="w-12 h-12 mx-auto text-muted-foreground/30 mb-3" />
-                <h3 className="text-lg font-medium">No Milestones Yet</h3>
+                <h3 className="text-lg font-medium">{t("milestones.noMilestonesTitle")}</h3>
                 <p className="text-muted-foreground max-w-sm mx-auto mt-1">
-                  Every little step is worth remembering. Start tracking {baby.name}'s firsts.
+                  {t("milestones.noMilestonesDesc", { name: baby.name })}
                 </p>
                 <Button 
                   variant="outline" 
                   className="mt-6"
                   onClick={() => setIsAdding(true)}
                 >
-                  Log First Milestone
+                  {t("milestones.logFirstMilestone")}
                 </Button>
               </div>
             )}

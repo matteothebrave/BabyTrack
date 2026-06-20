@@ -1,6 +1,8 @@
 import React, { useEffect } from "react";
 import { Link, useLocation } from "wouter";
 import { useGetSettings } from "@workspace/api-client-react";
+import { useTranslation } from "react-i18next";
+import i18n from "@/i18n";
 import { 
   LayoutDashboard, 
   CheckSquare, 
@@ -8,12 +10,20 @@ import {
   Trophy, 
   BookOpen, 
   Settings as SettingsIcon,
-  Loader2
+  Loader2,
+  Globe
 } from "lucide-react";
+
+const LANGUAGES = [
+  { code: "en", label: "EN" },
+  { code: "es", label: "ES" },
+  { code: "pt", label: "PT" },
+];
 
 export default function Layout({ children }: { children: React.ReactNode }) {
   const [location, setLocation] = useLocation();
   const { data: settings, isLoading } = useGetSettings();
+  const { t, i18n: i18nInstance } = useTranslation();
 
   useEffect(() => {
     if (!isLoading && settings && !settings.parentName && location !== "/settings") {
@@ -30,21 +40,25 @@ export default function Layout({ children }: { children: React.ReactNode }) {
   }
 
   const navItems = [
-    { href: "/", label: "Dashboard", icon: LayoutDashboard },
-    { href: "/prepare", label: "Prepare", icon: CheckSquare },
-    { href: "/babies", label: "Babies", icon: Baby },
-    { href: "/milestones", label: "Milestones", icon: Trophy },
-    { href: "/journal", label: "Journal", icon: BookOpen },
-    { href: "/settings", label: "Settings", icon: SettingsIcon },
+    { href: "/", label: t("nav.dashboard"), icon: LayoutDashboard },
+    { href: "/prepare", label: t("nav.prepare"), icon: CheckSquare },
+    { href: "/babies", label: t("nav.babies"), icon: Baby },
+    { href: "/milestones", label: t("nav.milestones"), icon: Trophy },
+    { href: "/journal", label: t("nav.journal"), icon: BookOpen },
+    { href: "/settings", label: t("nav.settings"), icon: SettingsIcon },
   ];
+
+  function handleLangChange(code: string) {
+    i18n.changeLanguage(code);
+  }
 
   return (
     <div className="flex min-h-[100dvh] flex-col md:flex-row bg-background">
       {/* Sidebar for desktop */}
       <aside className="hidden md:flex w-64 flex-col border-r bg-card px-4 py-6">
         <div className="mb-8 px-4">
-          <h1 className="text-2xl font-serif font-bold text-primary">Twin Dad</h1>
-          <p className="text-sm text-muted-foreground mt-1">Command Center</p>
+          <h1 className="text-2xl font-serif font-bold text-primary">{t("brand.name")}</h1>
+          <p className="text-sm text-muted-foreground mt-1">{t("brand.subtitle")}</p>
         </div>
         
         <nav className="flex-1 space-y-2">
@@ -66,6 +80,29 @@ export default function Layout({ children }: { children: React.ReactNode }) {
             );
           })}
         </nav>
+
+        {/* Language switcher — desktop */}
+        <div className="mt-6 px-4">
+          <div className="flex items-center gap-1.5 mb-2">
+            <Globe className="w-3.5 h-3.5 text-muted-foreground" />
+            <span className="text-xs text-muted-foreground font-medium uppercase tracking-wider">{t("language.label")}</span>
+          </div>
+          <div className="flex gap-1">
+            {LANGUAGES.map((lang) => (
+              <button
+                key={lang.code}
+                onClick={() => handleLangChange(lang.code)}
+                className={`flex-1 py-1.5 rounded-lg text-xs font-semibold transition-colors ${
+                  i18nInstance.language === lang.code
+                    ? "bg-primary text-primary-foreground"
+                    : "bg-muted text-muted-foreground hover:bg-muted/70"
+                }`}
+              >
+                {lang.label}
+              </button>
+            ))}
+          </div>
+        </div>
       </aside>
 
       {/* Main content */}
@@ -92,6 +129,22 @@ export default function Layout({ children }: { children: React.ReactNode }) {
             </Link>
           );
         })}
+        {/* Language pill — mobile */}
+        <div className="flex flex-col items-center justify-center p-1 gap-0.5">
+          {LANGUAGES.map((lang) => (
+            <button
+              key={lang.code}
+              onClick={() => handleLangChange(lang.code)}
+              className={`text-[9px] font-bold px-1.5 py-0.5 rounded transition-colors ${
+                i18nInstance.language === lang.code
+                  ? "bg-primary text-primary-foreground"
+                  : "text-muted-foreground"
+              }`}
+            >
+              {lang.label}
+            </button>
+          ))}
+        </div>
       </nav>
     </div>
   );

@@ -1,5 +1,6 @@
-import React, { useState } from "react";
+import React from "react";
 import { format } from "date-fns";
+import { useTranslation } from "react-i18next";
 import { 
   useGetDashboardSummary, 
   useGetBabies, 
@@ -11,6 +12,7 @@ import { Loader2, Calendar as CalendarIcon, CheckSquare, Baby as BabyIcon, Clock
 import { Link } from "wouter";
 
 export default function Dashboard() {
+  const { t } = useTranslation();
   const { data: summary, isLoading: isLoadingSummary } = useGetDashboardSummary();
   const { data: babies, isLoading: isLoadingBabies } = useGetBabies();
   const { data: settings, isLoading: isLoadingSettings } = useGetSettings();
@@ -33,10 +35,10 @@ export default function Dashboard() {
       <div className="flex justify-between items-end">
         <div>
           <h1 className="text-4xl font-serif font-bold mb-2">
-            Welcome, {settings?.parentName || "Dad"}
+            {t("dashboard.welcome", { name: settings?.parentName || t("dashboard.dad") })}
           </h1>
           <p className="text-muted-foreground text-lg">
-            {hasBabies ? "The twins are here. You've got this." : "Command center ready. The twins are coming."}
+            {hasBabies ? t("dashboard.taglineAfter") : t("dashboard.taglineBefore")}
           </p>
         </div>
         {!hasBabies && summary?.daysUntilDue !== undefined && summary?.daysUntilDue !== null && (
@@ -45,14 +47,13 @@ export default function Dashboard() {
               {summary.daysUntilDue}
             </div>
             <div className="text-sm text-muted-foreground font-medium uppercase tracking-wider mt-1">
-              Days to go
+              {t("dashboard.daysToGo")}
             </div>
           </div>
         )}
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-        {/* Pre-birth modules */}
         {!hasBabies && (
           <>
             <Card className="border-border/50 shadow-sm col-span-1 md:col-span-2 bg-primary/5 border-primary/20">
@@ -60,7 +61,7 @@ export default function Dashboard() {
                 <div className="flex items-center justify-between">
                   <CardTitle className="flex items-center gap-2">
                     <CheckSquare className="w-5 h-5 text-primary" />
-                    Preparation Progress
+                    {t("dashboard.preparationProgress")}
                   </CardTitle>
                   <span className="text-primary font-medium">{checklistProgressPercent}%</span>
                 </div>
@@ -69,10 +70,13 @@ export default function Dashboard() {
                 <Progress value={checklistProgressPercent} className="h-3 bg-primary/10" />
                 <div className="mt-4 flex justify-between items-center text-sm">
                   <span className="text-muted-foreground">
-                    {summary?.checklistProgress.completed} of {summary?.checklistProgress.total} tasks completed
+                    {t("dashboard.tasksCompleted", {
+                      completed: summary?.checklistProgress.completed,
+                      total: summary?.checklistProgress.total,
+                    })}
                   </span>
                   <Link href="/prepare" className="text-primary font-medium hover:underline">
-                    View Checklist →
+                    {t("dashboard.viewChecklist")}
                   </Link>
                 </div>
               </CardContent>
@@ -80,7 +84,6 @@ export default function Dashboard() {
           </>
         )}
 
-        {/* Post-birth modules */}
         {hasBabies && babies.map(baby => (
           <Card key={baby.id} className="border-border/50 shadow-sm relative overflow-hidden">
             <div className="absolute top-0 left-0 w-full h-1" style={{ backgroundColor: baby.colorHex }} />
@@ -89,28 +92,27 @@ export default function Dashboard() {
                 <BabyIcon className="w-5 h-5" />
                 {baby.name}
               </CardTitle>
-              <CardDescription>Today's Activity</CardDescription>
+              <CardDescription>{t("dashboard.todayActivity")}</CardDescription>
             </CardHeader>
             <CardContent>
               <div className="space-y-4">
                 <div className="grid grid-cols-2 gap-4">
                   <div className="bg-muted rounded-xl p-4 text-center">
                     <div className="text-2xl font-bold text-foreground mb-1">
-                      {/* Will fetch from baby today summary in real implementation */}
                       {summary?.totalFeedingsToday ? Math.floor(summary.totalFeedingsToday / 2) : 0}
                     </div>
-                    <div className="text-xs text-muted-foreground uppercase tracking-wider">Feedings</div>
+                    <div className="text-xs text-muted-foreground uppercase tracking-wider">{t("dashboard.feedings")}</div>
                   </div>
                   <div className="bg-muted rounded-xl p-4 text-center">
                     <div className="text-2xl font-bold text-foreground mb-1">
                       {summary?.totalDiapersToday ? Math.floor(summary.totalDiapersToday / 2) : 0}
                     </div>
-                    <div className="text-xs text-muted-foreground uppercase tracking-wider">Diapers</div>
+                    <div className="text-xs text-muted-foreground uppercase tracking-wider">{t("dashboard.diapers")}</div>
                   </div>
                 </div>
                 <div className="flex gap-2">
                   <Link href={`/babies?babyId=${baby.id}`} className="flex-1 bg-primary/10 hover:bg-primary/20 text-primary font-medium text-center py-2 rounded-lg transition-colors text-sm">
-                    Log Activity
+                    {t("dashboard.logActivity")}
                   </Link>
                 </div>
               </div>
@@ -118,12 +120,11 @@ export default function Dashboard() {
           </Card>
         ))}
 
-        {/* Appointments Module */}
         <Card className="border-border/50 shadow-sm">
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
               <CalendarIcon className="w-5 h-5 text-secondary" />
-              Upcoming Appointments
+              {t("dashboard.upcomingAppointments")}
             </CardTitle>
           </CardHeader>
           <CardContent>
@@ -148,12 +149,12 @@ export default function Dashboard() {
             ) : (
               <div className="text-center py-6 text-muted-foreground">
                 <CalendarIcon className="w-8 h-8 mx-auto mb-2 opacity-20" />
-                <p>No upcoming appointments</p>
+                <p>{t("dashboard.noAppointments")}</p>
               </div>
             )}
             <div className="mt-6 text-center">
               <Link href="/prepare" className="text-sm text-secondary font-medium hover:underline">
-                Manage Schedule
+                {t("dashboard.manageSchedule")}
               </Link>
             </div>
           </CardContent>
