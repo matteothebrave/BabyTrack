@@ -72,7 +72,10 @@ router.post("/login", async (req, res) => {
     req.session.userId = user.id;
     req.session.userRole = user.role as "dad" | "mom";
     req.session.userName = user.name;
-    return res.json({ id: user.id, role: user.role, name: user.name });
+    return req.session.save((err) => {
+      if (err) return res.status(500).json({ message: "Session error" });
+      return res.json({ id: user.id, role: user.role, name: user.name });
+    });
   }
 
   const match = await bcrypt.compare(pin, user.pinHash);
@@ -83,7 +86,10 @@ router.post("/login", async (req, res) => {
   req.session.userId = user.id;
   req.session.userRole = user.role as "dad" | "mom";
   req.session.userName = user.name;
-  res.json({ id: user.id, role: user.role, name: user.name });
+  req.session.save((err) => {
+    if (err) return res.status(500).json({ message: "Session error" });
+    return res.json({ id: user.id, role: user.role, name: user.name });
+  });
 });
 
 router.post("/logout", (req, res) => {

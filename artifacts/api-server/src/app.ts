@@ -9,6 +9,9 @@ const PgSession = connectPgSimple(session);
 
 const app: Express = express();
 
+// Trust the reverse proxy so secure cookies work behind HTTPS in production
+app.set("trust proxy", 1);
+
 app.use(
   pinoHttp({
     logger,
