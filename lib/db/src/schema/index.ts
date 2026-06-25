@@ -1,4 +1,5 @@
 export * from "./settings";
+export * from "./users";
 export * from "./babies";
 export * from "./feeding-logs";
 export * from "./diaper-logs";

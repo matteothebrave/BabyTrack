@@ -1,5 +1,6 @@
 import { Router, type IRouter } from "express";
 import healthRouter from "./health";
+import authRouter from "./auth";
 import settingsRouter from "./settings";
 import babiesRouter from "./babies";
 import feedingLogsRouter from "./feeding-logs";
@@ -10,10 +11,13 @@ import checklistItemsRouter from "./checklist-items";
 import appointmentsRouter from "./appointments";
 import journalEntriesRouter from "./journal-entries";
 import summaryRouter from "./summary";
+import { authMiddleware } from "../middlewares/auth-middleware";
 
 const router: IRouter = Router();
 
 router.use(healthRouter);
+router.use("/auth", authRouter);
+router.use(authMiddleware);
 router.use("/settings", settingsRouter);
 router.use("/summary", summaryRouter);
 router.use("/babies", babiesRouter);

@@ -3,15 +3,17 @@ import { Link, useLocation } from "wouter";
 import { useGetSettings } from "@workspace/api-client-react";
 import { useTranslation } from "react-i18next";
 import i18n from "@/i18n";
-import { 
-  LayoutDashboard, 
-  CheckSquare, 
-  Baby, 
-  Trophy, 
-  BookOpen, 
+import type { AuthUser } from "@/hooks/use-auth";
+import {
+  LayoutDashboard,
+  CheckSquare,
+  Baby,
+  Trophy,
+  BookOpen,
   Settings as SettingsIcon,
   Loader2,
-  Globe
+  Globe,
+  LogOut,
 } from "lucide-react";
 
 const LANGUAGES = [
@@ -20,7 +22,13 @@ const LANGUAGES = [
   { code: "pt", label: "PT" },
 ];
 
-export default function Layout({ children }: { children: React.ReactNode }) {
+interface Props {
+  children: React.ReactNode;
+  currentUser?: AuthUser;
+  onLogout?: () => void;
+}
+
+export default function Layout({ children, currentUser, onLogout }: Props) {
   const [location, setLocation] = useLocation();
   const { data: settings, isLoading } = useGetSettings();
   const { t, i18n: i18nInstance } = useTranslation();
@@ -52,6 +60,8 @@ export default function Layout({ children }: { children: React.ReactNode }) {
     i18n.changeLanguage(code);
   }
 
+  const userColor = currentUser?.role === "mom" ? "bg-rose-100 text-rose-600" : "bg-amber-100 text-amber-700";
+
   return (
     <div className="flex min-h-[100dvh] flex-col md:flex-row bg-background">
       {/* Sidebar for desktop */}
@@ -60,17 +70,17 @@ export default function Layout({ children }: { children: React.ReactNode }) {
           <h1 className="text-2xl font-serif font-bold text-primary">{t("brand.name")}</h1>
           <p className="text-sm text-muted-foreground mt-1">{t("brand.subtitle")}</p>
         </div>
-        
+
         <nav className="flex-1 space-y-2">
           {navItems.map((item) => {
             const isActive = location === item.href;
             return (
-              <Link 
-                key={item.href} 
+              <Link
+                key={item.href}
                 href={item.href}
                 className={`flex items-center gap-3 px-4 py-3 rounded-xl transition-colors ${
-                  isActive 
-                    ? "bg-primary text-primary-foreground font-medium shadow-sm" 
+                  isActive
+                    ? "bg-primary text-primary-foreground font-medium shadow-sm"
                     : "text-foreground hover:bg-muted"
                 }`}
               >
@@ -81,8 +91,8 @@ export default function Layout({ children }: { children: React.ReactNode }) {
           })}
         </nav>
 
-        {/* Language switcher — desktop */}
-        <div className="mt-6 px-4">
+        {/* Language switcher */}
+        <div className="mt-4 px-4">
           <div className="flex items-center gap-1.5 mb-2">
             <Globe className="w-3.5 h-3.5 text-muted-foreground" />
             <span className="text-xs text-muted-foreground font-medium uppercase tracking-wider">{t("language.label")}</span>
@@ -103,6 +113,27 @@ export default function Layout({ children }: { children: React.ReactNode }) {
             ))}
           </div>
         </div>
+
+        {/* User + logout */}
+        {currentUser && (
+          <div className="mt-4 px-4 pt-4 border-t border-border/60">
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-2">
+                <div className={`w-8 h-8 rounded-full flex items-center justify-center text-sm font-bold ${userColor}`}>
+                  {currentUser.name.charAt(0).toUpperCase()}
+                </div>
+                <span className="text-sm font-medium text-foreground truncate">{currentUser.name}</span>
+              </div>
+              <button
+                onClick={onLogout}
+                title={t("login.logout")}
+                className="text-muted-foreground hover:text-foreground transition-colors p-1.5 rounded-lg hover:bg-muted"
+              >
+                <LogOut className="w-4 h-4" />
+              </button>
+            </div>
+          </div>
+        )}
       </aside>
 
       {/* Main content */}
@@ -117,8 +148,8 @@ export default function Layout({ children }: { children: React.ReactNode }) {
         {navItems.map((item) => {
           const isActive = location === item.href;
           return (
-            <Link 
-              key={item.href} 
+            <Link
+              key={item.href}
               href={item.href}
               className={`flex flex-col items-center justify-center p-2 rounded-lg w-full ${
                 isActive ? "text-primary" : "text-muted-foreground hover:text-foreground"
@@ -129,8 +160,9 @@ export default function Layout({ children }: { children: React.ReactNode }) {
             </Link>
           );
         })}
-        {/* Language pill — mobile */}
-        <div className="flex flex-col items-center justify-center p-1 gap-0.5">
+
+        {/* Lang + logout — mobile */}
+        <div className="flex flex-col items-center gap-0.5 px-1">
           {LANGUAGES.map((lang) => (
             <button
               key={lang.code}
@@ -144,6 +176,14 @@ export default function Layout({ children }: { children: React.ReactNode }) {
               {lang.label}
             </button>
           ))}
+          {onLogout && (
+            <button
+              onClick={onLogout}
+              className="text-muted-foreground hover:text-foreground mt-0.5"
+            >
+              <LogOut className="w-3.5 h-3.5" />
+            </button>
+          )}
         </div>
       </nav>
     </div>
