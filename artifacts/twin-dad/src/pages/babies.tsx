@@ -253,7 +253,7 @@ function BabyPanel({ baby }: { baby: { id: number; name: string; colorHex: strin
       kind: "feeding" as const,
       id: f.id,
       time: f.loggedAt,
-      label: t(`babies.${f.feedType as FeedType}`) + (f.amount ? ` · ${f.amount} oz` : "") + (f.durationMinutes ? ` · ${f.durationMinutes} min` : ""),
+      label: t(`babies.${f.feedType as FeedType}`) + (f.amount ? ` · ${f.amount} ml` : "") + (f.durationMinutes ? ` · ${f.durationMinutes} min` : ""),
     })),
     ...(diaperLogs ?? []).map((d) => ({
       kind: "diaper" as const,

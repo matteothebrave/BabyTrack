@@ -138,7 +138,7 @@ const en = {
       wet: "Wet",
       dirty: "Dirty",
       both: "Both",
-      amount: "Amount (oz, optional)",
+      amount: "Amount (ml, optional)",
       duration: "Duration (min, optional)",
       notes: "Notes (optional)",
       saveLog: "Save",

@@ -138,7 +138,7 @@ const pt = {
       wet: "Molhada",
       dirty: "Suja",
       both: "Ambas",
-      amount: "Quantidade (oz, opcional)",
+      amount: "Quantidade (ml, opcional)",
       duration: "Duração (min, opcional)",
       notes: "Observações (opcional)",
       saveLog: "Salvar",

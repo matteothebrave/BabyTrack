@@ -138,7 +138,7 @@ const es = {
       wet: "Mojado",
       dirty: "Sucio",
       both: "Ambos",
-      amount: "Cantidad (oz, opcional)",
+      amount: "Cantidad (ml, opcional)",
       duration: "Duración (min, opcional)",
       notes: "Notas (opcional)",
       saveLog: "Guardar",
