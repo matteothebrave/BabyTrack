@@ -221,6 +221,56 @@ export interface JournalEntryInput {
   entryDate: string;
 }
 
+export interface Contact {
+  id: number;
+  name: string;
+  role: string;
+  /** @nullable */
+  phone?: string | null;
+  /** @nullable */
+  email?: string | null;
+  /** @nullable */
+  notes?: string | null;
+  createdAt: string;
+}
+
+export interface ContactInput {
+  name: string;
+  role: string;
+  /** @nullable */
+  phone?: string | null;
+  /** @nullable */
+  email?: string | null;
+  /** @nullable */
+  notes?: string | null;
+}
+
+export interface Contraction {
+  id: number;
+  startTime: string;
+  /** @nullable */
+  endTime?: string | null;
+  /** @nullable */
+  durationSeconds?: number | null;
+  /** @nullable */
+  intervalSeconds?: number | null;
+  /** @nullable */
+  notes?: string | null;
+  createdAt: string;
+}
+
+export interface ContractionInput {
+  startTime: string;
+  /** @nullable */
+  endTime?: string | null;
+  /** @nullable */
+  durationSeconds?: number | null;
+  /** @nullable */
+  intervalSeconds?: number | null;
+  /** @nullable */
+  notes?: string | null;
+}
+
 export type GetFeedingLogsParams = {
 babyId?: number;
 limit?: number;

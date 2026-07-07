@@ -8,3 +8,5 @@ export * from "./milestones";
 export * from "./checklist-items";
 export * from "./appointments";
 export * from "./journal-entries";
+export * from "./contacts";
+export * from "./contractions";

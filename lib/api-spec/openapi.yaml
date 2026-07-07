@@ -21,14 +21,16 @@ tags:
     description: Sleep logs
   - name: milestones
     description: Baby milestones
-  - name: checklists
-    description: Preparation checklists
   - name: appointments
     description: Doctor appointments
   - name: journal
     description: Dad's journal
   - name: summary
     description: Dashboard summaries
+  - name: contacts
+    description: Important contacts
+  - name: contractions
+    description: Contraction timer
 
 paths:
   /healthz:
@@ -592,6 +594,130 @@ paths:
         "204":
           description: Deleted
 
+  /contacts:
+    get:
+      operationId: getContacts
+      tags: [contacts]
+      summary: List contacts
+      responses:
+        "200":
+          description: Contacts
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Contact"
+    post:
+      operationId: createContact
+      tags: [contacts]
+      summary: Create a contact
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ContactInput"
+      responses:
+        "201":
+          description: Created contact
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Contact"
+
+  /contacts/{id}:
+    put:
+      operationId: updateContact
+      tags: [contacts]
+      summary: Update a contact
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ContactInput"
+      responses:
+        "200":
+          description: Updated contact
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Contact"
+    delete:
+      operationId: deleteContact
+      tags: [contacts]
+      summary: Delete a contact
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        "204":
+          description: Deleted
+
+  /contractions:
+    get:
+      operationId: getContractions
+      tags: [contractions]
+      summary: List contractions
+      responses:
+        "200":
+          description: Contractions
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Contraction"
+    post:
+      operationId: createContraction
+      tags: [contractions]
+      summary: Log a contraction
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ContractionInput"
+      responses:
+        "201":
+          description: Created contraction
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Contraction"
+    delete:
+      operationId: clearContractions
+      tags: [contractions]
+      summary: Clear all contractions
+      responses:
+        "204":
+          description: Cleared
+
+  /contractions/{id}:
+    delete:
+      operationId: deleteContraction
+      tags: [contractions]
+      summary: Delete a contraction
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        "204":
+          description: Deleted
+
 components:
   schemas:
     HealthStatus:
@@ -1009,3 +1135,81 @@ components:
         - title
         - content
         - entryDate
+
+    Contact:
+      type: object
+      properties:
+        id:
+          type: integer
+        name:
+          type: string
+        role:
+          type: string
+        phone:
+          type: ["string", "null"]
+        email:
+          type: ["string", "null"]
+        notes:
+          type: ["string", "null"]
+        createdAt:
+          type: string
+      required:
+        - id
+        - name
+        - role
+        - createdAt
+
+    ContactInput:
+      type: object
+      properties:
+        name:
+          type: string
+        role:
+          type: string
+        phone:
+          type: ["string", "null"]
+        email:
+          type: ["string", "null"]
+        notes:
+          type: ["string", "null"]
+      required:
+        - name
+        - role
+
+    Contraction:
+      type: object
+      properties:
+        id:
+          type: integer
+        startTime:
+          type: string
+        endTime:
+          type: ["string", "null"]
+        durationSeconds:
+          type: ["integer", "null"]
+        intervalSeconds:
+          type: ["integer", "null"]
+        notes:
+          type: ["string", "null"]
+        createdAt:
+          type: string
+      required:
+        - id
+        - startTime
+        - createdAt
+
+    ContractionInput:
+      type: object
+      properties:
+        startTime:
+          type: string
+        endTime:
+          type: ["string", "null"]
+        durationSeconds:
+          type: ["integer", "null"]
+        intervalSeconds:
+          type: ["integer", "null"]
+        notes:
+          type: ["string", "null"]
+      required:
+        - startTime

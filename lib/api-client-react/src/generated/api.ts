@@ -28,6 +28,10 @@ import type {
   ChecklistItem,
   ChecklistItemInput,
   ChecklistItemUpdate,
+  Contact,
+  ContactInput,
+  Contraction,
+  ContractionInput,
   DashboardSummary,
   DiaperLog,
   DiaperLogInput,
@@ -2440,5 +2444,583 @@ export const useDeleteJournalEntry = <TError = ErrorType<unknown>,
         TContext
       > => {
       return useMutation(getDeleteJournalEntryMutationOptions(options));
+    }
+
+export const getGetContactsUrl = () => {
+
+
+
+
+  return `/api/contacts`
+}
+
+/**
+ * @summary List contacts
+ */
+export const getContacts = async ( options?: RequestInit): Promise<Contact[]> => {
+
+  return customFetch<Contact[]>(getGetContactsUrl(),
+  {
+    ...options,
+    method: 'GET'
+
+
+  }
+);}
+
+
+
+
+
+export const getGetContactsQueryKey = () => {
+    return [
+    `/api/contacts`
+    ] as const;
+    }
+
+
+export const getGetContactsQueryOptions = <TData = Awaited<ReturnType<typeof getContacts>>, TError = ErrorType<unknown>>( options?: { query?:UseQueryOptions<Awaited<ReturnType<typeof getContacts>>, TError, TData>, request?: SecondParameter<typeof customFetch>}
+) => {
+
+const {query: queryOptions, request: requestOptions} = options ?? {};
+
+  const queryKey =  queryOptions?.queryKey ?? getGetContactsQueryKey();
+
+
+
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof getContacts>>> = ({ signal }) => getContacts({ signal, ...requestOptions });
+
+
+
+
+
+   return  { queryKey, queryFn, ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof getContacts>>, TError, TData> & { queryKey: QueryKey }
+}
+
+export type GetContactsQueryResult = NonNullable<Awaited<ReturnType<typeof getContacts>>>
+export type GetContactsQueryError = ErrorType<unknown>
+
+
+/**
+ * @summary List contacts
+ */
+
+export function useGetContacts<TData = Awaited<ReturnType<typeof getContacts>>, TError = ErrorType<unknown>>(
+  options?: { query?:UseQueryOptions<Awaited<ReturnType<typeof getContacts>>, TError, TData>, request?: SecondParameter<typeof customFetch>}
+
+ ):  UseQueryResult<TData, TError> & { queryKey: QueryKey } {
+
+  const queryOptions = getGetContactsQueryOptions(options)
+
+  const query = useQuery(queryOptions) as  UseQueryResult<TData, TError> & { queryKey: QueryKey };
+
+  return { ...query, queryKey: queryOptions.queryKey };
+}
+
+
+
+
+
+
+
+export const getCreateContactUrl = () => {
+
+
+
+
+  return `/api/contacts`
+}
+
+/**
+ * @summary Create a contact
+ */
+export const createContact = async (contactInput: ContactInput, options?: RequestInit): Promise<Contact> => {
+
+  return customFetch<Contact>(getCreateContactUrl(),
+  {
+    ...options,
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', ...options?.headers },
+    body: JSON.stringify(
+      contactInput,)
+  }
+);}
+
+
+
+
+export const getCreateContactMutationOptions = <TError = ErrorType<unknown>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof createContact>>, TError,{data: BodyType<ContactInput>}, TContext>, request?: SecondParameter<typeof customFetch>}
+): UseMutationOptions<Awaited<ReturnType<typeof createContact>>, TError,{data: BodyType<ContactInput>}, TContext> => {
+
+const mutationKey = ['createContact'];
+const {mutation: mutationOptions, request: requestOptions} = options ?
+      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
+      options
+      : {...options, mutation: {...options.mutation, mutationKey}}
+      : {mutation: { mutationKey, }, request: undefined};
+
+
+
+
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof createContact>>, {data: BodyType<ContactInput>}> = (props) => {
+          const {data} = props ?? {};
+
+          return  createContact(data,requestOptions)
+        }
+
+
+
+
+
+
+  return  { mutationFn, ...mutationOptions }}
+
+    export type CreateContactMutationResult = NonNullable<Awaited<ReturnType<typeof createContact>>>
+    export type CreateContactMutationBody = BodyType<ContactInput>
+    export type CreateContactMutationError = ErrorType<unknown>
+
+    /**
+ * @summary Create a contact
+ */
+export const useCreateContact = <TError = ErrorType<unknown>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof createContact>>, TError,{data: BodyType<ContactInput>}, TContext>, request?: SecondParameter<typeof customFetch>}
+ ): UseMutationResult<
+        Awaited<ReturnType<typeof createContact>>,
+        TError,
+        {data: BodyType<ContactInput>},
+        TContext
+      > => {
+      return useMutation(getCreateContactMutationOptions(options));
+    }
+
+export const getUpdateContactUrl = (id: number,) => {
+
+
+
+
+  return `/api/contacts/${id}`
+}
+
+/**
+ * @summary Update a contact
+ */
+export const updateContact = async (id: number,
+    contactInput: ContactInput, options?: RequestInit): Promise<Contact> => {
+
+  return customFetch<Contact>(getUpdateContactUrl(id),
+  {
+    ...options,
+    method: 'PUT',
+    headers: { 'Content-Type': 'application/json', ...options?.headers },
+    body: JSON.stringify(
+      contactInput,)
+  }
+);}
+
+
+
+
+export const getUpdateContactMutationOptions = <TError = ErrorType<unknown>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof updateContact>>, TError,{id: number;data: BodyType<ContactInput>}, TContext>, request?: SecondParameter<typeof customFetch>}
+): UseMutationOptions<Awaited<ReturnType<typeof updateContact>>, TError,{id: number;data: BodyType<ContactInput>}, TContext> => {
+
+const mutationKey = ['updateContact'];
+const {mutation: mutationOptions, request: requestOptions} = options ?
+      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
+      options
+      : {...options, mutation: {...options.mutation, mutationKey}}
+      : {mutation: { mutationKey, }, request: undefined};
+
+
+
+
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof updateContact>>, {id: number;data: BodyType<ContactInput>}> = (props) => {
+          const {id,data} = props ?? {};
+
+          return  updateContact(id,data,requestOptions)
+        }
+
+
+
+
+
+
+  return  { mutationFn, ...mutationOptions }}
+
+    export type UpdateContactMutationResult = NonNullable<Awaited<ReturnType<typeof updateContact>>>
+    export type UpdateContactMutationBody = BodyType<ContactInput>
+    export type UpdateContactMutationError = ErrorType<unknown>
+
+    /**
+ * @summary Update a contact
+ */
+export const useUpdateContact = <TError = ErrorType<unknown>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof updateContact>>, TError,{id: number;data: BodyType<ContactInput>}, TContext>, request?: SecondParameter<typeof customFetch>}
+ ): UseMutationResult<
+        Awaited<ReturnType<typeof updateContact>>,
+        TError,
+        {id: number;data: BodyType<ContactInput>},
+        TContext
+      > => {
+      return useMutation(getUpdateContactMutationOptions(options));
+    }
+
+export const getDeleteContactUrl = (id: number,) => {
+
+
+
+
+  return `/api/contacts/${id}`
+}
+
+/**
+ * @summary Delete a contact
+ */
+export const deleteContact = async (id: number, options?: RequestInit): Promise<void> => {
+
+  return customFetch<void>(getDeleteContactUrl(id),
+  {
+    ...options,
+    method: 'DELETE'
+
+
+  }
+);}
+
+
+
+
+export const getDeleteContactMutationOptions = <TError = ErrorType<unknown>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof deleteContact>>, TError,{id: number}, TContext>, request?: SecondParameter<typeof customFetch>}
+): UseMutationOptions<Awaited<ReturnType<typeof deleteContact>>, TError,{id: number}, TContext> => {
+
+const mutationKey = ['deleteContact'];
+const {mutation: mutationOptions, request: requestOptions} = options ?
+      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
+      options
+      : {...options, mutation: {...options.mutation, mutationKey}}
+      : {mutation: { mutationKey, }, request: undefined};
+
+
+
+
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof deleteContact>>, {id: number}> = (props) => {
+          const {id} = props ?? {};
+
+          return  deleteContact(id,requestOptions)
+        }
+
+
+
+
+
+
+  return  { mutationFn, ...mutationOptions }}
+
+    export type DeleteContactMutationResult = NonNullable<Awaited<ReturnType<typeof deleteContact>>>
+
+    export type DeleteContactMutationError = ErrorType<unknown>
+
+    /**
+ * @summary Delete a contact
+ */
+export const useDeleteContact = <TError = ErrorType<unknown>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof deleteContact>>, TError,{id: number}, TContext>, request?: SecondParameter<typeof customFetch>}
+ ): UseMutationResult<
+        Awaited<ReturnType<typeof deleteContact>>,
+        TError,
+        {id: number},
+        TContext
+      > => {
+      return useMutation(getDeleteContactMutationOptions(options));
+    }
+
+export const getGetContractionsUrl = () => {
+
+
+
+
+  return `/api/contractions`
+}
+
+/**
+ * @summary List contractions
+ */
+export const getContractions = async ( options?: RequestInit): Promise<Contraction[]> => {
+
+  return customFetch<Contraction[]>(getGetContractionsUrl(),
+  {
+    ...options,
+    method: 'GET'
+
+
+  }
+);}
+
+
+
+
+
+export const getGetContractionsQueryKey = () => {
+    return [
+    `/api/contractions`
+    ] as const;
+    }
+
+
+export const getGetContractionsQueryOptions = <TData = Awaited<ReturnType<typeof getContractions>>, TError = ErrorType<unknown>>( options?: { query?:UseQueryOptions<Awaited<ReturnType<typeof getContractions>>, TError, TData>, request?: SecondParameter<typeof customFetch>}
+) => {
+
+const {query: queryOptions, request: requestOptions} = options ?? {};
+
+  const queryKey =  queryOptions?.queryKey ?? getGetContractionsQueryKey();
+
+
+
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof getContractions>>> = ({ signal }) => getContractions({ signal, ...requestOptions });
+
+
+
+
+
+   return  { queryKey, queryFn, ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof getContractions>>, TError, TData> & { queryKey: QueryKey }
+}
+
+export type GetContractionsQueryResult = NonNullable<Awaited<ReturnType<typeof getContractions>>>
+export type GetContractionsQueryError = ErrorType<unknown>
+
+
+/**
+ * @summary List contractions
+ */
+
+export function useGetContractions<TData = Awaited<ReturnType<typeof getContractions>>, TError = ErrorType<unknown>>(
+  options?: { query?:UseQueryOptions<Awaited<ReturnType<typeof getContractions>>, TError, TData>, request?: SecondParameter<typeof customFetch>}
+
+ ):  UseQueryResult<TData, TError> & { queryKey: QueryKey } {
+
+  const queryOptions = getGetContractionsQueryOptions(options)
+
+  const query = useQuery(queryOptions) as  UseQueryResult<TData, TError> & { queryKey: QueryKey };
+
+  return { ...query, queryKey: queryOptions.queryKey };
+}
+
+
+
+
+
+
+
+export const getCreateContractionUrl = () => {
+
+
+
+
+  return `/api/contractions`
+}
+
+/**
+ * @summary Log a contraction
+ */
+export const createContraction = async (contractionInput: ContractionInput, options?: RequestInit): Promise<Contraction> => {
+
+  return customFetch<Contraction>(getCreateContractionUrl(),
+  {
+    ...options,
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', ...options?.headers },
+    body: JSON.stringify(
+      contractionInput,)
+  }
+);}
+
+
+
+
+export const getCreateContractionMutationOptions = <TError = ErrorType<unknown>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof createContraction>>, TError,{data: BodyType<ContractionInput>}, TContext>, request?: SecondParameter<typeof customFetch>}
+): UseMutationOptions<Awaited<ReturnType<typeof createContraction>>, TError,{data: BodyType<ContractionInput>}, TContext> => {
+
+const mutationKey = ['createContraction'];
+const {mutation: mutationOptions, request: requestOptions} = options ?
+      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
+      options
+      : {...options, mutation: {...options.mutation, mutationKey}}
+      : {mutation: { mutationKey, }, request: undefined};
+
+
+
+
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof createContraction>>, {data: BodyType<ContractionInput>}> = (props) => {
+          const {data} = props ?? {};
+
+          return  createContraction(data,requestOptions)
+        }
+
+
+
+
+
+
+  return  { mutationFn, ...mutationOptions }}
+
+    export type CreateContractionMutationResult = NonNullable<Awaited<ReturnType<typeof createContraction>>>
+    export type CreateContractionMutationBody = BodyType<ContractionInput>
+    export type CreateContractionMutationError = ErrorType<unknown>
+
+    /**
+ * @summary Log a contraction
+ */
+export const useCreateContraction = <TError = ErrorType<unknown>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof createContraction>>, TError,{data: BodyType<ContractionInput>}, TContext>, request?: SecondParameter<typeof customFetch>}
+ ): UseMutationResult<
+        Awaited<ReturnType<typeof createContraction>>,
+        TError,
+        {data: BodyType<ContractionInput>},
+        TContext
+      > => {
+      return useMutation(getCreateContractionMutationOptions(options));
+    }
+
+export const getClearContractionsUrl = () => {
+
+
+
+
+  return `/api/contractions`
+}
+
+/**
+ * @summary Clear all contractions
+ */
+export const clearContractions = async ( options?: RequestInit): Promise<void> => {
+
+  return customFetch<void>(getClearContractionsUrl(),
+  {
+    ...options,
+    method: 'DELETE'
+
+
+  }
+);}
+
+
+
+
+export const getClearContractionsMutationOptions = <TError = ErrorType<unknown>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof clearContractions>>, TError,void, TContext>, request?: SecondParameter<typeof customFetch>}
+): UseMutationOptions<Awaited<ReturnType<typeof clearContractions>>, TError,void, TContext> => {
+
+const mutationKey = ['clearContractions'];
+const {mutation: mutationOptions, request: requestOptions} = options ?
+      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
+      options
+      : {...options, mutation: {...options.mutation, mutationKey}}
+      : {mutation: { mutationKey, }, request: undefined};
+
+
+
+
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof clearContractions>>, void> = () => {
+
+
+          return  clearContractions(requestOptions)
+        }
+
+
+
+
+
+
+  return  { mutationFn, ...mutationOptions }}
+
+    export type ClearContractionsMutationResult = NonNullable<Awaited<ReturnType<typeof clearContractions>>>
+
+    export type ClearContractionsMutationError = ErrorType<unknown>
+
+    /**
+ * @summary Clear all contractions
+ */
+export const useClearContractions = <TError = ErrorType<unknown>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof clearContractions>>, TError,void, TContext>, request?: SecondParameter<typeof customFetch>}
+ ): UseMutationResult<
+        Awaited<ReturnType<typeof clearContractions>>,
+        TError,
+        void,
+        TContext
+      > => {
+      return useMutation(getClearContractionsMutationOptions(options));
+    }
+
+export const getDeleteContractionUrl = (id: number,) => {
+
+
+
+
+  return `/api/contractions/${id}`
+}
+
+/**
+ * @summary Delete a contraction
+ */
+export const deleteContraction = async (id: number, options?: RequestInit): Promise<void> => {
+
+  return customFetch<void>(getDeleteContractionUrl(id),
+  {
+    ...options,
+    method: 'DELETE'
+
+
+  }
+);}
+
+
+
+
+export const getDeleteContractionMutationOptions = <TError = ErrorType<unknown>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof deleteContraction>>, TError,{id: number}, TContext>, request?: SecondParameter<typeof customFetch>}
+): UseMutationOptions<Awaited<ReturnType<typeof deleteContraction>>, TError,{id: number}, TContext> => {
+
+const mutationKey = ['deleteContraction'];
+const {mutation: mutationOptions, request: requestOptions} = options ?
+      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
+      options
+      : {...options, mutation: {...options.mutation, mutationKey}}
+      : {mutation: { mutationKey, }, request: undefined};
+
+
+
+
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof deleteContraction>>, {id: number}> = (props) => {
+          const {id} = props ?? {};
+
+          return  deleteContraction(id,requestOptions)
+        }
+
+
+
+
+
+
+  return  { mutationFn, ...mutationOptions }}
+
+    export type DeleteContractionMutationResult = NonNullable<Awaited<ReturnType<typeof deleteContraction>>>
+
+    export type DeleteContractionMutationError = ErrorType<unknown>
+
+    /**
+ * @summary Delete a contraction
+ */
+export const useDeleteContraction = <TError = ErrorType<unknown>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof deleteContraction>>, TError,{id: number}, TContext>, request?: SecondParameter<typeof customFetch>}
+ ): UseMutationResult<
+        Awaited<ReturnType<typeof deleteContraction>>,
+        TError,
+        {id: number},
+        TContext
+      > => {
+      return useMutation(getDeleteContractionMutationOptions(options));
     }
 

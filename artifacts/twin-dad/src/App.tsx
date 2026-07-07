@@ -5,11 +5,12 @@ import { TooltipProvider } from "@/components/ui/tooltip";
 import NotFound from "@/pages/not-found";
 import Layout from "@/components/layout";
 import Dashboard from "@/pages/dashboard";
-import Prepare from "@/pages/prepare";
 import Babies from "@/pages/babies";
 import Milestones from "@/pages/milestones";
 import Journal from "@/pages/journal";
 import Settings from "@/pages/settings";
+import Contractions from "@/pages/contractions";
+import Contacts from "@/pages/contacts";
 import LoginPage from "@/pages/login";
 import { useAuth } from "@/hooks/use-auth";
 import { Loader2 } from "lucide-react";
@@ -59,10 +60,11 @@ function AuthGate() {
       <Layout currentUser={user} onLogout={logout}>
         <Switch>
           <Route path="/" component={Dashboard} />
-          <Route path="/prepare" component={Prepare} />
           <Route path="/babies" component={Babies} />
           <Route path="/milestones" component={Milestones} />
           <Route path="/journal" component={Journal} />
+          <Route path="/contractions" component={Contractions} />
+          <Route path="/contacts" component={Contacts} />
           <Route path="/settings" component={Settings} />
           <Route component={NotFound} />
         </Switch>

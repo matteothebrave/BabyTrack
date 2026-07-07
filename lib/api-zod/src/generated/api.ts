@@ -463,3 +463,99 @@ export const DeleteJournalEntryParams = zod.object({
 })
 
 
+/**
+ * @summary List contacts
+ */
+export const GetContactsResponseItem = zod.object({
+  "id": zod.number(),
+  "name": zod.string(),
+  "role": zod.string(),
+  "phone": zod.string().nullish(),
+  "email": zod.string().nullish(),
+  "notes": zod.string().nullish(),
+  "createdAt": zod.string()
+})
+export const GetContactsResponse = zod.array(GetContactsResponseItem)
+
+
+/**
+ * @summary Create a contact
+ */
+export const CreateContactBody = zod.object({
+  "name": zod.string(),
+  "role": zod.string(),
+  "phone": zod.string().nullish(),
+  "email": zod.string().nullish(),
+  "notes": zod.string().nullish()
+})
+
+
+/**
+ * @summary Update a contact
+ */
+export const UpdateContactParams = zod.object({
+  "id": zod.coerce.number()
+})
+
+export const UpdateContactBody = zod.object({
+  "name": zod.string(),
+  "role": zod.string(),
+  "phone": zod.string().nullish(),
+  "email": zod.string().nullish(),
+  "notes": zod.string().nullish()
+})
+
+export const UpdateContactResponse = zod.object({
+  "id": zod.number(),
+  "name": zod.string(),
+  "role": zod.string(),
+  "phone": zod.string().nullish(),
+  "email": zod.string().nullish(),
+  "notes": zod.string().nullish(),
+  "createdAt": zod.string()
+})
+
+
+/**
+ * @summary Delete a contact
+ */
+export const DeleteContactParams = zod.object({
+  "id": zod.coerce.number()
+})
+
+
+/**
+ * @summary List contractions
+ */
+export const GetContractionsResponseItem = zod.object({
+  "id": zod.number(),
+  "startTime": zod.string(),
+  "endTime": zod.string().nullish(),
+  "durationSeconds": zod.number().nullish(),
+  "intervalSeconds": zod.number().nullish(),
+  "notes": zod.string().nullish(),
+  "createdAt": zod.string()
+})
+export const GetContractionsResponse = zod.array(GetContractionsResponseItem)
+
+
+/**
+ * @summary Log a contraction
+ */
+export const CreateContractionBody = zod.object({
+  "startTime": zod.string(),
+  "endTime": zod.string().nullish(),
+  "durationSeconds": zod.number().nullish(),
+  "intervalSeconds": zod.number().nullish(),
+  "notes": zod.string().nullish()
+})
+
+
+/**
+ * @summary Delete a contraction
+ */
+export const DeleteContractionParams = zod.object({
+  "id": zod.coerce.number()
+})
+
+

@@ -6,7 +6,6 @@ import i18n from "@/i18n";
 import type { AuthUser } from "@/hooks/use-auth";
 import {
   LayoutDashboard,
-  CheckSquare,
   Baby,
   Trophy,
   BookOpen,
@@ -14,6 +13,8 @@ import {
   Loader2,
   Globe,
   LogOut,
+  Timer,
+  Contact,
 } from "lucide-react";
 
 const LANGUAGES = [
@@ -49,10 +50,11 @@ export default function Layout({ children, currentUser, onLogout }: Props) {
 
   const navItems = [
     { href: "/", label: t("nav.dashboard"), icon: LayoutDashboard },
-    { href: "/prepare", label: t("nav.prepare"), icon: CheckSquare },
     { href: "/babies", label: t("nav.babies"), icon: Baby },
     { href: "/milestones", label: t("nav.milestones"), icon: Trophy },
     { href: "/journal", label: t("nav.journal"), icon: BookOpen },
+    { href: "/contractions", label: t("nav.contractions"), icon: Timer },
+    { href: "/contacts", label: t("nav.contacts"), icon: Contact },
     { href: "/settings", label: t("nav.settings"), icon: SettingsIcon },
   ];
 
