@@ -559,3 +559,82 @@ export const DeleteContractionParams = zod.object({
 })
 
 
+/**
+ * @summary List growth entries
+ */
+export const GetGrowthEntriesQueryParams = zod.object({
+  "babyId": zod.coerce.number().optional()
+})
+
+export const GetGrowthEntriesResponseItem = zod.object({
+  "id": zod.number(),
+  "babyId": zod.number(),
+  "date": zod.string(),
+  "weightKg": zod.number().nullish(),
+  "heightCm": zod.number().nullish(),
+  "headCm": zod.number().nullish(),
+  "notes": zod.string().nullish(),
+  "createdAt": zod.string()
+})
+export const GetGrowthEntriesResponse = zod.array(GetGrowthEntriesResponseItem)
+
+
+/**
+ * @summary Create a growth entry
+ */
+export const CreateGrowthEntryBody = zod.object({
+  "babyId": zod.number(),
+  "date": zod.string(),
+  "weightKg": zod.number().nullish(),
+  "heightCm": zod.number().nullish(),
+  "headCm": zod.number().nullish(),
+  "notes": zod.string().nullish()
+})
+
+
+/**
+ * @summary Delete a growth entry
+ */
+export const DeleteGrowthEntryParams = zod.object({
+  "id": zod.coerce.number()
+})
+
+
+/**
+ * @summary Get vaccine schedule for a baby
+ */
+export const GetVaccineScheduleQueryParams = zod.object({
+  "babyId": zod.coerce.number()
+})
+
+export const GetVaccineScheduleResponseItem = zod.object({
+  "key": zod.string(),
+  "name": zod.string(),
+  "ageMonths": zod.number(),
+  "scheduledDate": zod.string().nullish(),
+  "givenDate": zod.string().nullish(),
+  "recordId": zod.number().nullish(),
+  "notes": zod.string().nullish()
+})
+export const GetVaccineScheduleResponse = zod.array(GetVaccineScheduleResponseItem)
+
+
+/**
+ * @summary Mark a vaccine as given
+ */
+export const RecordVaccineBody = zod.object({
+  "babyId": zod.number(),
+  "vaccineKey": zod.string(),
+  "givenDate": zod.string(),
+  "notes": zod.string().nullish()
+})
+
+
+/**
+ * @summary Unmark a vaccine
+ */
+export const DeleteVaccineRecordParams = zod.object({
+  "id": zod.coerce.number()
+})
+
+

@@ -11,6 +11,8 @@ import appointmentsRouter from "./appointments";
 import journalEntriesRouter from "./journal-entries";
 import contactsRouter from "./contacts";
 import contractionsRouter from "./contractions";
+import growthEntriesRouter from "./growth-entries";
+import vaccinesRouter from "./vaccines";
 import summaryRouter from "./summary";
 import { authMiddleware } from "../middlewares/auth-middleware";
 
@@ -30,5 +32,7 @@ router.use("/appointments", appointmentsRouter);
 router.use("/journal-entries", journalEntriesRouter);
 router.use("/contacts", contactsRouter);
 router.use("/contractions", contractionsRouter);
+router.use("/growth-entries", growthEntriesRouter);
+router.use("/vaccines", vaccinesRouter);
 
 export default router;

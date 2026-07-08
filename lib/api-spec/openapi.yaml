@@ -31,6 +31,10 @@ tags:
     description: Important contacts
   - name: contractions
     description: Contraction timer
+  - name: growth
+    description: Baby growth tracking
+  - name: vaccines
+    description: Vaccine calendar
 
 paths:
   /healthz:
@@ -718,6 +722,111 @@ paths:
         "204":
           description: Deleted
 
+  /growth-entries:
+    get:
+      operationId: getGrowthEntries
+      tags: [growth]
+      summary: List growth entries
+      parameters:
+        - name: babyId
+          in: query
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: Growth entries
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/GrowthEntry"
+    post:
+      operationId: createGrowthEntry
+      tags: [growth]
+      summary: Create a growth entry
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/GrowthEntryInput"
+      responses:
+        "201":
+          description: Created growth entry
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/GrowthEntry"
+
+  /growth-entries/{id}:
+    delete:
+      operationId: deleteGrowthEntry
+      tags: [growth]
+      summary: Delete a growth entry
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        "204":
+          description: Deleted
+
+  /vaccines:
+    get:
+      operationId: getVaccineSchedule
+      tags: [vaccines]
+      summary: Get vaccine schedule for a baby
+      parameters:
+        - name: babyId
+          in: query
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: Vaccine schedule
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/VaccineScheduleItem"
+    post:
+      operationId: recordVaccine
+      tags: [vaccines]
+      summary: Mark a vaccine as given
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/VaccineRecordInput"
+      responses:
+        "201":
+          description: Created vaccine record
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/VaccineRecord"
+
+  /vaccines/{id}:
+    delete:
+      operationId: deleteVaccineRecord
+      tags: [vaccines]
+      summary: Unmark a vaccine
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        "204":
+          description: Deleted
+
 components:
   schemas:
     HealthStatus:
@@ -1213,3 +1322,107 @@ components:
           type: ["string", "null"]
       required:
         - startTime
+
+    GrowthEntry:
+      type: object
+      properties:
+        id:
+          type: integer
+        babyId:
+          type: integer
+        date:
+          type: string
+        weightKg:
+          type: ["number", "null"]
+        heightCm:
+          type: ["number", "null"]
+        headCm:
+          type: ["number", "null"]
+        notes:
+          type: ["string", "null"]
+        createdAt:
+          type: string
+      required:
+        - id
+        - babyId
+        - date
+        - createdAt
+
+    GrowthEntryInput:
+      type: object
+      properties:
+        babyId:
+          type: integer
+        date:
+          type: string
+        weightKg:
+          type: ["number", "null"]
+        heightCm:
+          type: ["number", "null"]
+        headCm:
+          type: ["number", "null"]
+        notes:
+          type: ["string", "null"]
+      required:
+        - babyId
+        - date
+
+    VaccineScheduleItem:
+      type: object
+      properties:
+        key:
+          type: string
+        name:
+          type: string
+        ageMonths:
+          type: integer
+        scheduledDate:
+          type: ["string", "null"]
+        givenDate:
+          type: ["string", "null"]
+        recordId:
+          type: ["integer", "null"]
+        notes:
+          type: ["string", "null"]
+      required:
+        - key
+        - name
+        - ageMonths
+
+    VaccineRecord:
+      type: object
+      properties:
+        id:
+          type: integer
+        babyId:
+          type: integer
+        vaccineKey:
+          type: string
+        givenDate:
+          type: string
+        notes:
+          type: ["string", "null"]
+        createdAt:
+          type: string
+      required:
+        - id
+        - babyId
+        - vaccineKey
+        - givenDate
+        - createdAt
+
+    VaccineRecordInput:
+      type: object
+      properties:
+        babyId:
+          type: integer
+        vaccineKey:
+          type: string
+        givenDate:
+          type: string
+        notes:
+          type: ["string", "null"]
+      required:
+        - babyId
+        - vaccineKey
+        - givenDate

@@ -10,3 +10,5 @@ export * from "./appointments";
 export * from "./journal-entries";
 export * from "./contacts";
 export * from "./contractions";
+export * from "./growth-entries";
+export * from "./vaccine-records";

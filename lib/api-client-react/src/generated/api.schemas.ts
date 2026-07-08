@@ -271,6 +271,66 @@ export interface ContractionInput {
   notes?: string | null;
 }
 
+export interface GrowthEntry {
+  id: number;
+  babyId: number;
+  date: string;
+  /** @nullable */
+  weightKg?: number | null;
+  /** @nullable */
+  heightCm?: number | null;
+  /** @nullable */
+  headCm?: number | null;
+  /** @nullable */
+  notes?: string | null;
+  createdAt: string;
+}
+
+export interface GrowthEntryInput {
+  babyId: number;
+  date: string;
+  /** @nullable */
+  weightKg?: number | null;
+  /** @nullable */
+  heightCm?: number | null;
+  /** @nullable */
+  headCm?: number | null;
+  /** @nullable */
+  notes?: string | null;
+}
+
+export interface VaccineScheduleItem {
+  key: string;
+  name: string;
+  ageMonths: number;
+  /** @nullable */
+  scheduledDate?: string | null;
+  /** @nullable */
+  givenDate?: string | null;
+  /** @nullable */
+  recordId?: number | null;
+  /** @nullable */
+  notes?: string | null;
+}
+
+export interface VaccineRecord {
+  id: number;
+  babyId: number;
+  vaccineKey: string;
+  givenDate: string;
+  /** @nullable */
+  notes?: string | null;
+  createdAt: string;
+}
+
+export interface VaccineRecordInput {
+  babyId: number;
+  vaccineKey: string;
+  givenDate: string;
+  /** @nullable */
+  notes?: string | null;
+}
+
 export type GetFeedingLogsParams = {
 babyId?: number;
 limit?: number;
@@ -292,5 +352,13 @@ babyId?: number;
 
 export type GetChecklistItemsParams = {
 category?: string;
+};
+
+export type GetGrowthEntriesParams = {
+babyId?: number;
+};
+
+export type GetVaccineScheduleParams = {
+babyId: number;
 };
 

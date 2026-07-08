@@ -11,6 +11,9 @@ import Journal from "@/pages/journal";
 import Settings from "@/pages/settings";
 import Contractions from "@/pages/contractions";
 import Contacts from "@/pages/contacts";
+import Charts from "@/pages/charts";
+import Growth from "@/pages/growth";
+import Vaccines from "@/pages/vaccines";
 import LoginPage from "@/pages/login";
 import { useAuth } from "@/hooks/use-auth";
 import { Loader2 } from "lucide-react";
@@ -65,6 +68,9 @@ function AuthGate() {
           <Route path="/journal" component={Journal} />
           <Route path="/contractions" component={Contractions} />
           <Route path="/contacts" component={Contacts} />
+          <Route path="/charts" component={Charts} />
+          <Route path="/growth" component={Growth} />
+          <Route path="/vaccines" component={Vaccines} />
           <Route path="/settings" component={Settings} />
           <Route component={NotFound} />
         </Switch>

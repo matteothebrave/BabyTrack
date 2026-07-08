@@ -15,6 +15,9 @@ import {
   LogOut,
   Timer,
   Contact,
+  BarChart2,
+  TrendingUp,
+  ShieldCheck,
 } from "lucide-react";
 
 const LANGUAGES = [
@@ -53,6 +56,9 @@ export default function Layout({ children, currentUser, onLogout }: Props) {
     { href: "/babies", label: t("nav.babies"), icon: Baby },
     { href: "/milestones", label: t("nav.milestones"), icon: Trophy },
     { href: "/journal", label: t("nav.journal"), icon: BookOpen },
+    { href: "/charts", label: t("nav.charts"), icon: BarChart2 },
+    { href: "/growth", label: t("nav.growth"), icon: TrendingUp },
+    { href: "/vaccines", label: t("nav.vaccines"), icon: ShieldCheck },
     { href: "/contractions", label: t("nav.contractions"), icon: Timer },
     { href: "/contacts", label: t("nav.contacts"), icon: Contact },
     { href: "/settings", label: t("nav.settings"), icon: SettingsIcon },

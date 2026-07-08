@@ -40,8 +40,12 @@ import type {
   GetChecklistItemsParams,
   GetDiaperLogsParams,
   GetFeedingLogsParams,
+  GetGrowthEntriesParams,
   GetMilestonesParams,
   GetSleepLogsParams,
+  GetVaccineScheduleParams,
+  GrowthEntry,
+  GrowthEntryInput,
   HealthStatus,
   JournalEntry,
   JournalEntryInput,
@@ -50,7 +54,10 @@ import type {
   Settings,
   SettingsInput,
   SleepLog,
-  SleepLogInput
+  SleepLogInput,
+  VaccineRecord,
+  VaccineRecordInput,
+  VaccineScheduleItem
 } from './api.schemas';
 
 import { customFetch } from '../custom-fetch';
@@ -3022,5 +3029,455 @@ export const useDeleteContraction = <TError = ErrorType<unknown>,
         TContext
       > => {
       return useMutation(getDeleteContractionMutationOptions(options));
+    }
+
+export const getGetGrowthEntriesUrl = (params?: GetGrowthEntriesParams,) => {
+  const normalizedParams = new URLSearchParams();
+
+  Object.entries(params || {}).forEach(([key, value]) => {
+
+    if (value !== undefined) {
+      normalizedParams.append(key, value === null ? 'null' : value.toString())
+    }
+  });
+
+  const stringifiedParams = normalizedParams.toString();
+
+  return stringifiedParams.length > 0 ? `/api/growth-entries?${stringifiedParams}` : `/api/growth-entries`
+}
+
+/**
+ * @summary List growth entries
+ */
+export const getGrowthEntries = async (params?: GetGrowthEntriesParams, options?: RequestInit): Promise<GrowthEntry[]> => {
+
+  return customFetch<GrowthEntry[]>(getGetGrowthEntriesUrl(params),
+  {
+    ...options,
+    method: 'GET'
+
+
+  }
+);}
+
+
+
+
+
+export const getGetGrowthEntriesQueryKey = (params?: GetGrowthEntriesParams,) => {
+    return [
+    `/api/growth-entries`, ...(params ? [params] : [])
+    ] as const;
+    }
+
+
+export const getGetGrowthEntriesQueryOptions = <TData = Awaited<ReturnType<typeof getGrowthEntries>>, TError = ErrorType<unknown>>(params?: GetGrowthEntriesParams, options?: { query?:UseQueryOptions<Awaited<ReturnType<typeof getGrowthEntries>>, TError, TData>, request?: SecondParameter<typeof customFetch>}
+) => {
+
+const {query: queryOptions, request: requestOptions} = options ?? {};
+
+  const queryKey =  queryOptions?.queryKey ?? getGetGrowthEntriesQueryKey(params);
+
+
+
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof getGrowthEntries>>> = ({ signal }) => getGrowthEntries(params, { signal, ...requestOptions });
+
+
+
+
+
+   return  { queryKey, queryFn, ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof getGrowthEntries>>, TError, TData> & { queryKey: QueryKey }
+}
+
+export type GetGrowthEntriesQueryResult = NonNullable<Awaited<ReturnType<typeof getGrowthEntries>>>
+export type GetGrowthEntriesQueryError = ErrorType<unknown>
+
+
+/**
+ * @summary List growth entries
+ */
+
+export function useGetGrowthEntries<TData = Awaited<ReturnType<typeof getGrowthEntries>>, TError = ErrorType<unknown>>(
+ params?: GetGrowthEntriesParams, options?: { query?:UseQueryOptions<Awaited<ReturnType<typeof getGrowthEntries>>, TError, TData>, request?: SecondParameter<typeof customFetch>}
+
+ ):  UseQueryResult<TData, TError> & { queryKey: QueryKey } {
+
+  const queryOptions = getGetGrowthEntriesQueryOptions(params,options)
+
+  const query = useQuery(queryOptions) as  UseQueryResult<TData, TError> & { queryKey: QueryKey };
+
+  return { ...query, queryKey: queryOptions.queryKey };
+}
+
+
+
+
+
+
+
+export const getCreateGrowthEntryUrl = () => {
+
+
+
+
+  return `/api/growth-entries`
+}
+
+/**
+ * @summary Create a growth entry
+ */
+export const createGrowthEntry = async (growthEntryInput: GrowthEntryInput, options?: RequestInit): Promise<GrowthEntry> => {
+
+  return customFetch<GrowthEntry>(getCreateGrowthEntryUrl(),
+  {
+    ...options,
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', ...options?.headers },
+    body: JSON.stringify(
+      growthEntryInput,)
+  }
+);}
+
+
+
+
+export const getCreateGrowthEntryMutationOptions = <TError = ErrorType<unknown>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof createGrowthEntry>>, TError,{data: BodyType<GrowthEntryInput>}, TContext>, request?: SecondParameter<typeof customFetch>}
+): UseMutationOptions<Awaited<ReturnType<typeof createGrowthEntry>>, TError,{data: BodyType<GrowthEntryInput>}, TContext> => {
+
+const mutationKey = ['createGrowthEntry'];
+const {mutation: mutationOptions, request: requestOptions} = options ?
+      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
+      options
+      : {...options, mutation: {...options.mutation, mutationKey}}
+      : {mutation: { mutationKey, }, request: undefined};
+
+
+
+
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof createGrowthEntry>>, {data: BodyType<GrowthEntryInput>}> = (props) => {
+          const {data} = props ?? {};
+
+          return  createGrowthEntry(data,requestOptions)
+        }
+
+
+
+
+
+
+  return  { mutationFn, ...mutationOptions }}
+
+    export type CreateGrowthEntryMutationResult = NonNullable<Awaited<ReturnType<typeof createGrowthEntry>>>
+    export type CreateGrowthEntryMutationBody = BodyType<GrowthEntryInput>
+    export type CreateGrowthEntryMutationError = ErrorType<unknown>
+
+    /**
+ * @summary Create a growth entry
+ */
+export const useCreateGrowthEntry = <TError = ErrorType<unknown>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof createGrowthEntry>>, TError,{data: BodyType<GrowthEntryInput>}, TContext>, request?: SecondParameter<typeof customFetch>}
+ ): UseMutationResult<
+        Awaited<ReturnType<typeof createGrowthEntry>>,
+        TError,
+        {data: BodyType<GrowthEntryInput>},
+        TContext
+      > => {
+      return useMutation(getCreateGrowthEntryMutationOptions(options));
+    }
+
+export const getDeleteGrowthEntryUrl = (id: number,) => {
+
+
+
+
+  return `/api/growth-entries/${id}`
+}
+
+/**
+ * @summary Delete a growth entry
+ */
+export const deleteGrowthEntry = async (id: number, options?: RequestInit): Promise<void> => {
+
+  return customFetch<void>(getDeleteGrowthEntryUrl(id),
+  {
+    ...options,
+    method: 'DELETE'
+
+
+  }
+);}
+
+
+
+
+export const getDeleteGrowthEntryMutationOptions = <TError = ErrorType<unknown>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof deleteGrowthEntry>>, TError,{id: number}, TContext>, request?: SecondParameter<typeof customFetch>}
+): UseMutationOptions<Awaited<ReturnType<typeof deleteGrowthEntry>>, TError,{id: number}, TContext> => {
+
+const mutationKey = ['deleteGrowthEntry'];
+const {mutation: mutationOptions, request: requestOptions} = options ?
+      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
+      options
+      : {...options, mutation: {...options.mutation, mutationKey}}
+      : {mutation: { mutationKey, }, request: undefined};
+
+
+
+
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof deleteGrowthEntry>>, {id: number}> = (props) => {
+          const {id} = props ?? {};
+
+          return  deleteGrowthEntry(id,requestOptions)
+        }
+
+
+
+
+
+
+  return  { mutationFn, ...mutationOptions }}
+
+    export type DeleteGrowthEntryMutationResult = NonNullable<Awaited<ReturnType<typeof deleteGrowthEntry>>>
+
+    export type DeleteGrowthEntryMutationError = ErrorType<unknown>
+
+    /**
+ * @summary Delete a growth entry
+ */
+export const useDeleteGrowthEntry = <TError = ErrorType<unknown>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof deleteGrowthEntry>>, TError,{id: number}, TContext>, request?: SecondParameter<typeof customFetch>}
+ ): UseMutationResult<
+        Awaited<ReturnType<typeof deleteGrowthEntry>>,
+        TError,
+        {id: number},
+        TContext
+      > => {
+      return useMutation(getDeleteGrowthEntryMutationOptions(options));
+    }
+
+export const getGetVaccineScheduleUrl = (params: GetVaccineScheduleParams,) => {
+  const normalizedParams = new URLSearchParams();
+
+  Object.entries(params || {}).forEach(([key, value]) => {
+
+    if (value !== undefined) {
+      normalizedParams.append(key, value === null ? 'null' : value.toString())
+    }
+  });
+
+  const stringifiedParams = normalizedParams.toString();
+
+  return stringifiedParams.length > 0 ? `/api/vaccines?${stringifiedParams}` : `/api/vaccines`
+}
+
+/**
+ * @summary Get vaccine schedule for a baby
+ */
+export const getVaccineSchedule = async (params: GetVaccineScheduleParams, options?: RequestInit): Promise<VaccineScheduleItem[]> => {
+
+  return customFetch<VaccineScheduleItem[]>(getGetVaccineScheduleUrl(params),
+  {
+    ...options,
+    method: 'GET'
+
+
+  }
+);}
+
+
+
+
+
+export const getGetVaccineScheduleQueryKey = (params?: GetVaccineScheduleParams,) => {
+    return [
+    `/api/vaccines`, ...(params ? [params] : [])
+    ] as const;
+    }
+
+
+export const getGetVaccineScheduleQueryOptions = <TData = Awaited<ReturnType<typeof getVaccineSchedule>>, TError = ErrorType<unknown>>(params: GetVaccineScheduleParams, options?: { query?:UseQueryOptions<Awaited<ReturnType<typeof getVaccineSchedule>>, TError, TData>, request?: SecondParameter<typeof customFetch>}
+) => {
+
+const {query: queryOptions, request: requestOptions} = options ?? {};
+
+  const queryKey =  queryOptions?.queryKey ?? getGetVaccineScheduleQueryKey(params);
+
+
+
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof getVaccineSchedule>>> = ({ signal }) => getVaccineSchedule(params, { signal, ...requestOptions });
+
+
+
+
+
+   return  { queryKey, queryFn, ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof getVaccineSchedule>>, TError, TData> & { queryKey: QueryKey }
+}
+
+export type GetVaccineScheduleQueryResult = NonNullable<Awaited<ReturnType<typeof getVaccineSchedule>>>
+export type GetVaccineScheduleQueryError = ErrorType<unknown>
+
+
+/**
+ * @summary Get vaccine schedule for a baby
+ */
+
+export function useGetVaccineSchedule<TData = Awaited<ReturnType<typeof getVaccineSchedule>>, TError = ErrorType<unknown>>(
+ params: GetVaccineScheduleParams, options?: { query?:UseQueryOptions<Awaited<ReturnType<typeof getVaccineSchedule>>, TError, TData>, request?: SecondParameter<typeof customFetch>}
+
+ ):  UseQueryResult<TData, TError> & { queryKey: QueryKey } {
+
+  const queryOptions = getGetVaccineScheduleQueryOptions(params,options)
+
+  const query = useQuery(queryOptions) as  UseQueryResult<TData, TError> & { queryKey: QueryKey };
+
+  return { ...query, queryKey: queryOptions.queryKey };
+}
+
+
+
+
+
+
+
+export const getRecordVaccineUrl = () => {
+
+
+
+
+  return `/api/vaccines`
+}
+
+/**
+ * @summary Mark a vaccine as given
+ */
+export const recordVaccine = async (vaccineRecordInput: VaccineRecordInput, options?: RequestInit): Promise<VaccineRecord> => {
+
+  return customFetch<VaccineRecord>(getRecordVaccineUrl(),
+  {
+    ...options,
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', ...options?.headers },
+    body: JSON.stringify(
+      vaccineRecordInput,)
+  }
+);}
+
+
+
+
+export const getRecordVaccineMutationOptions = <TError = ErrorType<unknown>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof recordVaccine>>, TError,{data: BodyType<VaccineRecordInput>}, TContext>, request?: SecondParameter<typeof customFetch>}
+): UseMutationOptions<Awaited<ReturnType<typeof recordVaccine>>, TError,{data: BodyType<VaccineRecordInput>}, TContext> => {
+
+const mutationKey = ['recordVaccine'];
+const {mutation: mutationOptions, request: requestOptions} = options ?
+      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
+      options
+      : {...options, mutation: {...options.mutation, mutationKey}}
+      : {mutation: { mutationKey, }, request: undefined};
+
+
+
+
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof recordVaccine>>, {data: BodyType<VaccineRecordInput>}> = (props) => {
+          const {data} = props ?? {};
+
+          return  recordVaccine(data,requestOptions)
+        }
+
+
+
+
+
+
+  return  { mutationFn, ...mutationOptions }}
+
+    export type RecordVaccineMutationResult = NonNullable<Awaited<ReturnType<typeof recordVaccine>>>
+    export type RecordVaccineMutationBody = BodyType<VaccineRecordInput>
+    export type RecordVaccineMutationError = ErrorType<unknown>
+
+    /**
+ * @summary Mark a vaccine as given
+ */
+export const useRecordVaccine = <TError = ErrorType<unknown>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof recordVaccine>>, TError,{data: BodyType<VaccineRecordInput>}, TContext>, request?: SecondParameter<typeof customFetch>}
+ ): UseMutationResult<
+        Awaited<ReturnType<typeof recordVaccine>>,
+        TError,
+        {data: BodyType<VaccineRecordInput>},
+        TContext
+      > => {
+      return useMutation(getRecordVaccineMutationOptions(options));
+    }
+
+export const getDeleteVaccineRecordUrl = (id: number,) => {
+
+
+
+
+  return `/api/vaccines/${id}`
+}
+
+/**
+ * @summary Unmark a vaccine
+ */
+export const deleteVaccineRecord = async (id: number, options?: RequestInit): Promise<void> => {
+
+  return customFetch<void>(getDeleteVaccineRecordUrl(id),
+  {
+    ...options,
+    method: 'DELETE'
+
+
+  }
+);}
+
+
+
+
+export const getDeleteVaccineRecordMutationOptions = <TError = ErrorType<unknown>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof deleteVaccineRecord>>, TError,{id: number}, TContext>, request?: SecondParameter<typeof customFetch>}
+): UseMutationOptions<Awaited<ReturnType<typeof deleteVaccineRecord>>, TError,{id: number}, TContext> => {
+
+const mutationKey = ['deleteVaccineRecord'];
+const {mutation: mutationOptions, request: requestOptions} = options ?
+      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
+      options
+      : {...options, mutation: {...options.mutation, mutationKey}}
+      : {mutation: { mutationKey, }, request: undefined};
+
+
+
+
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof deleteVaccineRecord>>, {id: number}> = (props) => {
+          const {id} = props ?? {};
+
+          return  deleteVaccineRecord(id,requestOptions)
+        }
+
+
+
+
+
+
+  return  { mutationFn, ...mutationOptions }}
+
+    export type DeleteVaccineRecordMutationResult = NonNullable<Awaited<ReturnType<typeof deleteVaccineRecord>>>
+
+    export type DeleteVaccineRecordMutationError = ErrorType<unknown>
+
+    /**
+ * @summary Unmark a vaccine
+ */
+export const useDeleteVaccineRecord = <TError = ErrorType<unknown>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof deleteVaccineRecord>>, TError,{id: number}, TContext>, request?: SecondParameter<typeof customFetch>}
+ ): UseMutationResult<
+        Awaited<ReturnType<typeof deleteVaccineRecord>>,
+        TError,
+        {id: number},
+        TContext
+      > => {
+      return useMutation(getDeleteVaccineRecordMutationOptions(options));
     }
 
